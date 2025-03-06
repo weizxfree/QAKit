@@ -1,0 +1,41 @@
+1. 基于 v0.17.0 修改如下：
+
+- docker/entrypoint.sh
+- docker/entrypoint-parser.sh
+
+```
+while IFS= read -r line || [[ -n "$line" ]]; do
+    # Use eval to interpret the variable with default values
+    eval "echo \"$line\"" >> ./conf/service_conf.yaml
+done < ./docker/service_conf.yaml.template
+```
+
+
+rag/utils/redis_conn.py
+
+```
+self.REDIS = redis.StrictRedis(
+                host=self.config["host"].split(":")[0],
+                port=int(self.config.get("host", ":6379").split(":")[1]),
+                db=int(self.config.get("db", 1)),
+                username="default",  # 添加 username
+                password=self.config.get("password"),
+                decode_responses=True,
+            )
+```
+
+rag/utils/minio_conn.py
+
+# 为了适配 MAC 本地调试，临时追加代码，本质上应该是 host 问题
+
+settings.MINIO = {
+    "host": "localhost:9000",
+    "user": "rag_flow",
+    "password": "infini_rag_flow"
+}
+self.conn = Minio(settings.MINIO["host"],
+                  access_key=settings.MINIO["user"],
+                  secret_key=settings.MINIO["password"],
+                  secure=False
+                  )
+
