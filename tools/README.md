@@ -1,0 +1,7 @@
+该脚本可以实现批量注册用户[]: 
+原理是新创建用户时候，插入两条记录，分别是 owner 和 normal，如下
+
+21b5ca14fe4611ef874866fc51ac58de	21b5ca14fe4611ef874866fc51ac58de	owner	21b5ca14fe4611ef874866fc51ac58de
+21b5ca14fe4611ef874866fc51ac58de	6c4d2db2fe3011ef874866fc51ac58de	normal	6c4d2db2fe3011ef874866fc51ac58de
+
+
