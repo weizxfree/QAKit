@@ -5,7 +5,7 @@ import os,time
 class RAGFlowTester:
     def __init__(self, api_key, base_url):
         self.rag_object = RAGFlow(api_key=api_key, base_url=base_url)
-        self.dataset: DataSet    # 在类初始化时声明
+        self.dataset:DataSet    # 在类初始化时声明
         self.assistant:Chat 
         self.session:Session
 
@@ -51,67 +51,98 @@ class RAGFlowTester:
             print("数据集不存在，开始创建...")
             return self.create_dataset2(name)
 
-    def check_and_upload_document(self, file_path):
-        """检查并上传文档"""
-        print("\n2. 检查文档")
+    def check_and_upload_documents(self, dir_path):
+        """检查并上传目录下的所有文档"""
+        print(f"\n2. 检查目录下的文档: {dir_path}")
         try:
-            docs = self.dataset.list_documents()
-            if docs:
-                self.document = docs[0]
-                print(f"文档已存在，ID: {self.document.id}")
-                return True
+            # 获取目录下所有文件
+            files = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+            if not files:
+                print("目录下没有文件")
+                return False
 
-            # 文档不存在，上传文档
-            with open(file_path, "rb") as f:
-                document_blob = f.read()
-            uploaded_docs = self.dataset.upload_documents([{
-                "display_name": os.path.basename(file_path),
-                "blob": document_blob
-            }])
-            if uploaded_docs:
-                self.document = uploaded_docs[0]
-                print(f"文档上传成功，ID: {self.document.id}")
-                return True
-            return False
+            # 获取已存在的文档
+            existing_docs = self.dataset.list_documents()
+            existing_names = {doc.name: doc for doc in existing_docs}
+            
+            # 记录需要上传的文件
+            self.documents = []
+            
+            # 处理每个文件
+            for file_name in files:
+                if file_name in existing_names:
+                    print(f"文档已存在: {file_name}")
+                    self.documents.append(existing_names[file_name])
+                    continue
+
+                file_path = os.path.join(dir_path, file_name)
+                with open(file_path, "rb") as f:
+                    document_blob = f.read()
+                
+                uploaded_docs = self.dataset.upload_documents([{
+                    "display_name": file_name,
+                    "blob": document_blob
+                }])
+                
+                if uploaded_docs:
+                    self.documents.append(uploaded_docs[0])
+                    print(f"文档上传成功: {file_name}, ID: {uploaded_docs[0].id}")
+                else:
+                    print(f"文档上传失败: {file_name}")
+            
+            return len(self.documents) > 0
         except Exception as e:
             print(f"文档处理失败: {str(e)}")
             return False
 
-    def check_and_parse_document(self):
-        """检查并解析文档"""
-        print("\n3. 检查文档解析状态")
+    def check_and_parse_documents(self):
+        """检查并解析所有文档"""
+        print("\n3. 检查所有文档解析状态")
         try:
-            docs = self.dataset.list_documents(id=self.document.id)
-            if not docs:
-                raise Exception("找不到文档")
-            
-            doc = docs[0]
-            if doc.run == "DONE":
-                print("文档已解析完成")
-                return True
-            elif doc.run == "FAIL":
-                print("文档之前解析失败，重新解析")
-            else:
-                print("文档未解析，开始解析")
-
-            # 开始解析
-            self.dataset.async_parse_documents([self.document.id])
-            print("开始解析文档...")
-            
-            while True:
-                docs = self.dataset.list_documents(id=self.document.id)
+            # 获取需要解析的文档ID列表
+            docs_to_parse = []
+            for doc in self.documents:
+                docs = self.dataset.list_documents(id=doc.id)
                 if not docs:
-                    raise Exception("找不到文档")
+                    print(f"找不到文档: {doc.name}")
+                    continue
                 
-                doc = docs[0]
-                if doc.run == "DONE":
-                    print("文档解析完成")
-                    return True
-                elif doc.run == "FAIL":
-                    raise Exception("文档解析失败")
+                if docs[0].run != "DONE":
+                    docs_to_parse.append(doc.id)
+                else:
+                    print(f"文档已解析完成: {doc.name}")
+
+            if not docs_to_parse:
+                print("所有文档都已解析完成")
+                return True
+
+            # 开始解析未完成的文档
+            print(f"开始解析 {len(docs_to_parse)} 个文档...")
+            self.dataset.async_parse_documents(docs_to_parse)
+            
+            # 等待所有文档解析完成
+            while docs_to_parse:
+                for doc_id in docs_to_parse[:]:
+                    docs = self.dataset.list_documents(id=doc_id)
+                    if not docs:
+                        print(f"找不到文档ID: {doc_id}")
+                        docs_to_parse.remove(doc_id)
+                        continue
+                    
+                    doc = docs[0]
+                    if doc.run == "DONE":
+                        print(f"文档解析完成: {doc.name}")
+                        docs_to_parse.remove(doc_id)
+                    elif doc.run == "FAIL":
+                        print(f"文档解析失败: {doc.name}")
+                        docs_to_parse.remove(doc_id)
+                    else:
+                        print(f"文档 {doc.name} 解析进度: {doc.progress*100}%")
                 
-                print(f"解析进度: {doc.progress*100}%")
-                time.sleep(2)
+                if docs_to_parse:
+                    time.sleep(2)
+            
+            return True
         except Exception as e:
             print(f"解析文档失败: {str(e)}")
             return False
@@ -167,14 +198,18 @@ def main():
     
     # 获取当前脚本所在目录的绝对路径
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    test_file = os.path.join(current_dir, "test.pdf")
+    docs_dir = os.path.join(current_dir, "docs")  # 文档目录
+    
+    # 确保 docs 目录存在
+    if not os.path.exists(docs_dir):
+        os.makedirs(docs_dir)
 
     # 执行测试流程
     if not tester.get_or_create_dataset("test_dataset"):
         return
-    if not tester.check_and_upload_document(test_file):
+    if not tester.check_and_upload_documents(docs_dir):
         return
-    if not tester.check_and_parse_document():
+    if not tester.check_and_parse_documents():
         return
     if not tester.get_or_create_assistant():
         return
@@ -182,7 +217,7 @@ def main():
         return
 
     # 开始对话
-    question = "设备有哪些单元名称?"
+    question = "大疆 SDK 怎么集成?"
     print(f"\nUser: {question}")
     print("Assistant: ", end="", flush=True)
     
