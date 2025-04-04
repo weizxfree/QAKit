@@ -1,7 +1,6 @@
 import { useTranslate } from '@/hooks/common-hooks';
-import { DownOutlined, GithubOutlined } from '@ant-design/icons';
-import { Dropdown, MenuProps, Space } from 'antd';
-import camelCase from 'lodash/camelCase';
+import { GithubOutlined } from '@ant-design/icons';
+import { MenuProps, Space } from 'antd';
 import React from 'react';
 import User from '../user';
 
@@ -57,13 +56,13 @@ const RightToolBar = () => {
 
   return (
     <div className={styled.toolbarWrapper}>
-      <Space wrap size={16}>
-        <Dropdown menu={{ items, onClick: handleItemClick }} placement="bottom">
+      <Space wrap size={16} className={styled.content}>
+        {/* <Dropdown menu={{ items, onClick: handleItemClick }} placement="bottom">
           <Space className={styled.language}>
             <b>{t(camelCase(language))}</b>
             <DownOutlined />
           </Space>
-        </Dropdown>
+        </Dropdown> */}
         <Circle>
           <GithubOutlined onClick={handleGithubCLick} />
         </Circle>

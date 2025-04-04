@@ -1,10 +1,9 @@
 import { useLogin, useRegister } from '@/hooks/login-hooks';
 import { rsaPsw } from '@/utils';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Icon, useNavigate } from 'umi';
-import RightPanel from './right-panel';
+// import RightPanel from './right-panel';
 
 import { Domain } from '@/constants/common';
 import styles from './index.less';
@@ -14,7 +13,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { login, loading: signLoading } = useLogin();
   const { register, loading: registerLoading } = useRegister();
-  const { t } = useTranslation('translation', { keyPrefix: 'login' });
+  // const { t } = useTranslation('translation', { keyPrefix: 'login' });
   const loading = signLoading || registerLoading;
 
   const changeTitle = () => {
@@ -69,11 +68,15 @@ const Login = () => {
       <div className={styles.loginLeft}>
         <div className={styles.leftContainer}>
           <div className={styles.loginTitle}>
-            <div>{title === 'login' ? t('login') : t('register')}</div>
+            <div className={styles.loginLogo}>
+              <div className={styles.logo}></div>
+              <div className={styles.name}>KnowFlow</div>
+            </div>
             <span>
-              {title === 'login'
+              {title === 'login' ? '很高兴再次见到您' : '很高兴您加入'}
+              {/* {title === 'login'
                 ? t('loginDescription')
-                : t('registerDescription')}
+                : t('registerDescription')} */}
             </span>
           </div>
 
@@ -86,52 +89,52 @@ const Login = () => {
             <Form.Item
               {...formItemLayout}
               name="email"
-              label={t('emailLabel')}
-              rules={[{ required: true, message: t('emailPlaceholder') }]}
+              // label={t('emailLabel')}
+              rules={[{ required: true, message: '请输入邮箱地址' }]}
             >
-              <Input size="large" placeholder={t('emailPlaceholder')} />
+              <Input size="large" placeholder="请输入邮箱地址" />
             </Form.Item>
             {title === 'register' && (
               <Form.Item
                 {...formItemLayout}
                 name="nickname"
-                label={t('nicknameLabel')}
-                rules={[{ required: true, message: t('nicknamePlaceholder') }]}
+                // label={t('nicknameLabel')}
+                rules={[{ required: true, message: '请输入昵称' }]}
               >
-                <Input size="large" placeholder={t('nicknamePlaceholder')} />
+                <Input size="large" placeholder="请输入昵称" />
               </Form.Item>
             )}
             <Form.Item
               {...formItemLayout}
               name="password"
-              label={t('passwordLabel')}
-              rules={[{ required: true, message: t('passwordPlaceholder') }]}
+              // label={t('passwordLabel')}
+              rules={[{ required: true, message: '请输入密码' }]}
             >
               <Input.Password
                 size="large"
-                placeholder={t('passwordPlaceholder')}
+                placeholder="请输入密码"
                 onPressEnter={onCheck}
               />
             </Form.Item>
-            {title === 'login' && (
+            {/* {title === 'login' && (
               <Form.Item name="remember" valuePropName="checked">
-                <Checkbox> {t('rememberMe')}</Checkbox>
+                <Checkbox> 记住我</Checkbox>
               </Form.Item>
-            )}
+            )} */}
             <div>
               {title === 'login' && (
                 <div>
-                  {t('signInTip')}
+                  {'没有账号?'}
                   <Button type="link" onClick={changeTitle}>
-                    {t('signUp')}
+                    {'注册'}
                   </Button>
                 </div>
               )}
               {title === 'register' && (
                 <div>
-                  {t('signUpTip')}
+                  {'已有账号?'}
                   <Button type="link" onClick={changeTitle}>
-                    {t('login')}
+                    {'去登录'}
                   </Button>
                 </div>
               )}
@@ -143,7 +146,7 @@ const Login = () => {
               onClick={onCheck}
               loading={loading}
             >
-              {title === 'login' ? t('login') : t('continue')}
+              {title === 'login' ? '登录' : '注册'}
             </Button>
             {title === 'login' && (
               <>
@@ -182,9 +185,9 @@ const Login = () => {
           </Form>
         </div>
       </div>
-      <div className={styles.loginRight}>
+      {/* <div className={styles.loginRight}>
         <RightPanel></RightPanel>
-      </div>
+      </div> */}
     </div>
   );
 };

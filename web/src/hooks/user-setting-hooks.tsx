@@ -34,9 +34,11 @@ export const useFetchUserInfo = (): ResponseGetType<IUserInfo> => {
       const { data } = await userService.user_info();
       if (data.code === 0) {
         i18n.changeLanguage(
-          LanguageTranslationMap[
-            data.data.language as keyof typeof LanguageTranslationMap
-          ],
+          // LanguageTranslationMap[
+          //   data.data.language as keyof typeof LanguageTranslationMap
+          // ],
+          // 默认定死中文
+          LanguageTranslationMap['Chinese'],
         );
       }
       return data?.data ?? {};
