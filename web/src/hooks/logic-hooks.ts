@@ -96,6 +96,7 @@ export const useGetPaginationWithRouter = () => {
       pageSize: pageSize,
       pageSizeOptions: [1, 2, 10, 20, 50, 100],
       onChange: onPageChange,
+      size: 'small',
       showTotal: (total) => `${t('total')} ${total}`,
     };
   }, [t, onPageChange, page, pageSize]);

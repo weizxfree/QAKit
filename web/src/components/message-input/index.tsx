@@ -5,29 +5,8 @@ import {
   useRemoveNextDocument,
   useUploadAndParseDocument,
 } from '@/hooks/document-hooks';
-import { getExtension } from '@/utils/document-util';
-import { formatBytes } from '@/utils/file-util';
-import {
-  CloseCircleOutlined,
-  InfoCircleOutlined,
-  LoadingOutlined,
-  PaperClipOutlined,
-  SendOutlined,
-} from '@ant-design/icons';
 import type { GetProp, UploadFile } from 'antd';
-import {
-  Button,
-  Card,
-  Divider,
-  Flex,
-  Input,
-  List,
-  Space,
-  Spin,
-  Typography,
-  Upload,
-  UploadProps,
-} from 'antd';
+import { Flex, Input, Typography, UploadProps } from 'antd';
 import get from 'lodash/get';
 import {
   ChangeEventHandler,
@@ -37,7 +16,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import FileIcon from '../file-icon';
 import styles from './index.less';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -225,7 +203,7 @@ const MessageInput = ({
     <Flex gap={1} vertical className={styles.messageInputWrapper}>
       <TextArea
         size="large"
-        placeholder={t('sendPlaceholder')}
+        placeholder="请输入您的问题"
         value={value}
         allowClear
         disabled={disabled}
@@ -235,14 +213,22 @@ const MessageInput = ({
           padding: '0px 10px',
           marginTop: 10,
         }}
-        autoSize={{ minRows: 2, maxRows: 10 }}
+        autoSize={{ minRows: 1, maxRows: 10 }}
         onKeyDown={handleKeyDown}
         onChange={onInputChange}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
       />
-      <Divider style={{ margin: '5px 30px 10px 0px' }} />
-      <Flex justify="space-between" align="center">
+      <div className={styles.sendQuestion}>
+        <div
+          className={styles.sendQuestionIcon}
+          onClick={handlePressEnter}
+          loading={sendLoading}
+          disabled={sendDisabled || sendLoading}
+        ></div>
+      </div>
+      {/* <Divider style={{ margin: '5px 30px 10px 0px' }} /> */}
+      {/* <Flex justify="space-between" align="center">
         {fileList.length > 0 && (
           <List
             grid={{
@@ -355,7 +341,7 @@ const MessageInput = ({
             <SendOutlined />
           </Button>
         </Flex>
-      </Flex>
+      </Flex> */}
     </Flex>
   );
 };

@@ -14,6 +14,7 @@ import { Radio, Tooltip } from 'antd';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import FeedbackModal from './feedback-modal';
+import styles from './group-button.less';
 import { useRemoveMessage, useSendFeedback, useSpeech } from './hooks';
 import PromptModal from './prompt-modal';
 
@@ -50,7 +51,7 @@ export const AssistantGroupButton = ({
 
   return (
     <>
-      <Radio.Group size="small">
+      <Radio.Group size="small" className={styles.groupButton}>
         <Radio.Button value="a">
           <CopyToClipboard text={content}></CopyToClipboard>
         </Radio.Button>

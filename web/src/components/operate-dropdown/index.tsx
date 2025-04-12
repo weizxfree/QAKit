@@ -18,7 +18,7 @@ interface IProps {
 const OperateDropdown = ({
   deleteItem,
   children,
-  iconFontSize = 30,
+  iconFontSize = 20,
   iconFontColor = 'gray',
   items: otherItems = [],
   height = 24,

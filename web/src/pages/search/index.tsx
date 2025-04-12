@@ -81,15 +81,20 @@ const SearchPage = () => {
     handleTestChunk(selectedDocumentIds, pageNumber, pageSize);
   };
 
+  const suffixSearch = (
+    <div className={styles.sufSearch} onClick={sendQuestion}></div>
+  );
+
   const InputSearch = (
-    <Search
+    <Input
       value={searchStr}
       onChange={handleSearchStrChange}
       placeholder={t('header.search')}
       allowClear
-      enterButton
-      onSearch={sendQuestion}
+      // enterButton
+      // onSearch={sendQuestion}
       size="large"
+      suffix={suffixSearch}
       loading={sendingLoading}
       disabled={checkedWithoutEmbeddingIdList.length === 0}
       className={isFirstRender ? styles.globalInput : styles.partialInput}
@@ -104,11 +109,14 @@ const SearchPage = () => {
           checkedList={checkedWithoutEmbeddingIdList}
           setCheckedList={setCheckedList}
         ></SearchSidebar>
-        <Layout className={isFirstRender ? styles.mainLayout : ''}>
+        <Layout className={styles.myLayout}>
           <Content>
             {isFirstRender ? (
               <Flex justify="center" className={styles.firstRenderContent}>
                 <Flex vertical align="center" gap={'large'}>
+                  <div className={styles.searchTitle}>
+                    您好，今天能为你提供什么帮助？
+                  </div>
                   {InputSearch}
                 </Flex>
               </Flex>

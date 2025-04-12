@@ -1,16 +1,7 @@
 import { useInfiniteFetchKnowledgeList } from '@/hooks/knowledge-hooks';
 import { useFetchUserInfo } from '@/hooks/user-setting-hooks';
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Divider,
-  Empty,
-  Flex,
-  Input,
-  Skeleton,
-  Space,
-  Spin,
-} from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { Flex, Input, Skeleton, Space, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSaveKnowledge } from './hooks';
@@ -51,6 +42,7 @@ const KnowledgeList = () => {
 
   return (
     <Flex className={styles.knowledge} vertical flex={1} id="scrollableDiv">
+      <div className={styles.topTitle}>知识库</div>
       <div className={styles.topWrapper}>
         <div>
           <span className={styles.title}>
@@ -67,7 +59,7 @@ const KnowledgeList = () => {
             onChange={handleInputChange}
             prefix={<SearchOutlined />}
           />
-
+          {/* 
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -75,7 +67,7 @@ const KnowledgeList = () => {
             className={styles.topButton}
           >
             {t('createKnowledgeBase')}
-          </Button>
+          </Button> */}
         </Space>
       </div>
       <Spin spinning={loading}>
@@ -84,7 +76,7 @@ const KnowledgeList = () => {
           next={fetchNextPage}
           hasMore={hasNextPage}
           loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-          endMessage={!!total && <Divider plain>{t('noMoreData')} 🤐</Divider>}
+          endMessage=""
           scrollableTarget="scrollableDiv"
         >
           <Flex
@@ -92,18 +84,19 @@ const KnowledgeList = () => {
             wrap="wrap"
             className={styles.knowledgeCardContainer}
           >
-            {nextList?.length > 0 ? (
-              nextList.map((item: any, index: number) => {
-                return (
-                  <KnowledgeCard
-                    item={item}
-                    key={`${item?.name}-${index}`}
-                  ></KnowledgeCard>
-                );
-              })
-            ) : (
-              <Empty className={styles.knowledgeEmpty}></Empty>
-            )}
+            <div className={styles.addCard} onClick={showModal}>
+              <div className={styles.addIcon}></div>
+              <div className={styles.addDesc}>创建知识库</div>
+            </div>
+
+            {nextList.map((item: any, index: number) => {
+              return (
+                <KnowledgeCard
+                  item={item}
+                  key={`${item?.name}-${index}`}
+                ></KnowledgeCard>
+              );
+            })}
           </Flex>
         </InfiniteScroll>
       </Spin>

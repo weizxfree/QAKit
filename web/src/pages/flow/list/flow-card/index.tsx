@@ -1,6 +1,5 @@
 import { formatDate } from '@/utils/date';
-import { CalendarOutlined } from '@ant-design/icons';
-import { Card, Typography } from 'antd';
+import { Card } from 'antd';
 import { useNavigate } from 'umi';
 
 import OperateDropdown from '@/components/operate-dropdown';
@@ -30,22 +29,26 @@ const FlowCard = ({ item }: IProps) => {
     <Card className={styles.card} onClick={handleCardClick}>
       <div className={styles.container}>
         <div className={styles.content}>
-          <GraphAvatar avatar={item.avatar}></GraphAvatar>
+          <div className={styles.headContent}>
+            <GraphAvatar avatar={item.avatar}></GraphAvatar>
+            <span className={styles.name}>{item.title}</span>
+          </div>
           <OperateDropdown deleteItem={removeFlow}></OperateDropdown>
         </div>
         <div className={styles.titleWrapper}>
-          <Typography.Title
+          {/* <Typography.Title
             className={styles.title}
             ellipsis={{ tooltip: item.title }}
           >
             {item.title}
-          </Typography.Title>
+          </Typography.Title> */}
           <p>{item.description}</p>
         </div>
         <div className={styles.footer}>
           <div className={styles.bottom}>
             <div className={styles.bottomLeft}>
-              <CalendarOutlined className={styles.leftIcon} />
+              <span className={styles.leftIconDate}></span>
+              {/* <CalendarOutlined className={styles.leftIcon} /> */}
               <span className={styles.rightText}>
                 {formatDate(item.update_time)}
               </span>

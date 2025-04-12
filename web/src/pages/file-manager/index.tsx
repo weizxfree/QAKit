@@ -83,7 +83,7 @@ const FileManager = () => {
           <Flex gap={10} align="center">
             <SvgIcon
               name={`file-icon/${record.type === 'folder' ? 'folder' : getExtension(value)}`}
-              width={24}
+              width={20}
             ></SvgIcon>
             {record.type === 'folder' ? (
               <Button
@@ -139,6 +139,7 @@ const FileManager = () => {
     {
       title: t('action'),
       dataIndex: 'action',
+      width: 300,
       key: 'action',
       render: (text, record) => (
         <ActionCell
