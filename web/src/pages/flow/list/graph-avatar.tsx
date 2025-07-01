@@ -5,9 +5,9 @@ const GraphAvatar = ({ avatar }: { avatar?: string | null }) => {
   return (
     <div>
       {avatar ? (
-        <Avatar size={40} icon={<NothingIcon />} src={avatar} />
+        <Avatar size={30} icon={<NothingIcon />} src={avatar} />
       ) : (
-        <NothingIcon width={40} height={30} />
+        <NothingIcon width={30} height={30} />
       )}
     </div>
   );

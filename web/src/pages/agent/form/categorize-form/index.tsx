@@ -6,8 +6,17 @@ import { DynamicInputVariable } from '../components/next-dynamic-input-variable'
 import DynamicCategorize from './dynamic-categorize';
 
 const CategorizeForm = ({ form, node }: INextOperatorForm) => {
+  // const { handleValuesChange } = useHandleFormValuesChange({
+  //   form,
+  //   nodeId: node?.id,
+  //   onValuesChange,
+  // });
+
   return (
-    <Form {...form}>
+    <Form
+      // onValuesChange={handleValuesChange}
+      {...form}
+    >
       <form
         className="space-y-6 p-5 overflow-auto max-h-[76vh]"
         onSubmit={(e) => {

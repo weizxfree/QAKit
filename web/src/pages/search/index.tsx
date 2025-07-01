@@ -12,7 +12,6 @@ import {
 import { useGetPaginationWithRouter } from '@/hooks/logic-hooks';
 import { IReference } from '@/interfaces/database/chat';
 import {
-  Button,
   Card,
   Divider,
   Flex,
@@ -29,11 +28,9 @@ import {
   Tag,
   Tooltip,
 } from 'antd';
-import classNames from 'classnames';
 import DOMPurify from 'dompurify';
 import { isEmpty } from 'lodash';
-import { CircleStop, SendHorizontal } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import MarkdownContent from '../chat/markdown-content';
 import { useSendQuestion, useShowMindMapDrawer } from './hooks';
@@ -67,7 +64,6 @@ const SearchPage = () => {
     isFirstRender,
     selectedDocumentIds,
     isSearchStrEmpty,
-    stopOutputMessage,
   } = useSendQuestion(checkedWithoutEmbeddingIdList);
   const { visible, hideModal, documentId, selectedChunk, clickDocumentButton } =
     useClickDrawer();
@@ -85,35 +81,23 @@ const SearchPage = () => {
     handleTestChunk(selectedDocumentIds, pageNumber, pageSize);
   };
 
-  const handleSearch = useCallback(() => {
-    sendQuestion(searchStr);
-  }, [searchStr, sendQuestion]);
+  const suffixSearch = (
+    <div className={styles.sufSearch} onClick={sendQuestion}></div>
+  );
 
   const InputSearch = (
-    <Search
+    <Input
       value={searchStr}
       onChange={handleSearchStrChange}
       placeholder={t('header.search')}
       allowClear
-      addonAfter={
-        sendingLoading ? (
-          <Button onClick={stopOutputMessage}>
-            <CircleStop />
-          </Button>
-        ) : (
-          <Button onClick={handleSearch}>
-            <SendHorizontal className="size-5 text-blue-500" />
-          </Button>
-        )
-      }
-      onSearch={sendQuestion}
+      // enterButton
+      // onSearch={sendQuestion}
       size="large"
+      suffix={suffixSearch}
       loading={sendingLoading}
       disabled={checkedWithoutEmbeddingIdList.length === 0}
-      className={classNames(
-        styles.searchInput,
-        isFirstRender ? styles.globalInput : styles.partialInput,
-      )}
+      className={isFirstRender ? styles.globalInput : styles.partialInput}
     />
   );
 
@@ -125,11 +109,14 @@ const SearchPage = () => {
           checkedList={checkedWithoutEmbeddingIdList}
           setCheckedList={setCheckedList}
         ></SearchSidebar>
-        <Layout className={isFirstRender ? styles.mainLayout : ''}>
+        <Layout className={styles.myLayout}>
           <Content>
             {isFirstRender ? (
               <Flex justify="center" className={styles.firstRenderContent}>
                 <Flex vertical align="center" gap={'large'}>
+                  <div className={styles.searchTitle}>
+                    您好，今天能为你提供什么帮助？
+                  </div>
                   {InputSearch}
                 </Flex>
               </Flex>

@@ -1,115 +1,160 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { FormContainer } from '@/components/form-container';
-import {
-  initialTopKValue,
-  RerankFormFields,
-  topKSchema,
-} from '@/components/rerank';
-import {
-  initialKeywordsSimilarityWeightValue,
-  initialSimilarityThresholdValue,
-  keywordsSimilarityWeightSchema,
-  SimilaritySliderFormField,
-  similarityThresholdSchema,
-} from '@/components/similarity-slider';
-import { ButtonLoading } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { RAGFlowSelect } from '@/components/ui/select';
+import { FormSlider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
-import { UseKnowledgeGraphFormField } from '@/components/use-knowledge-graph-item';
-import { useTestRetrieval } from '@/hooks/use-knowledge-request';
-import { trim } from 'lodash';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
-type TestingFormProps = Pick<
-  ReturnType<typeof useTestRetrieval>,
-  'loading' | 'refetch' | 'setValues'
->;
+const options = [
+  { label: 'xx', value: 'xx' },
+  { label: 'ii', value: 'ii' },
+];
 
-export default function TestingForm({
-  loading,
-  refetch,
-  setValues,
-}: TestingFormProps) {
-  const { t } = useTranslation();
+const groupOptions = [
+  { label: 'scsdv', options },
+  { label: 'thtyu', options: [{ label: 'jj', value: 'jj' }] },
+];
 
-  const formSchema = z.object({
-    question: z.string().min(1, {
-      message: t('knowledgeDetails.testTextPlaceholder'),
-    }),
-    ...similarityThresholdSchema,
-    ...keywordsSimilarityWeightSchema,
-    ...topKSchema,
-  });
+const formSchema = z.object({
+  username: z.number().min(2, {
+    message: 'Username must be at least 2 characters.',
+  }),
+  a: z.number().min(2, {
+    message: 'Username must be at least 2 characters.',
+  }),
+  b: z.string().min(2, {
+    message: 'Username must be at least 2 characters.',
+  }),
+  c: z.number().min(2, {
+    message: 'Username must be at least 2 characters.',
+  }),
+  d: z.string().min(2, {
+    message: 'Username must be at least 2 characters.',
+  }),
+});
 
+export default function TestingForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...initialSimilarityThresholdValue,
-      ...initialKeywordsSimilarityWeightValue,
-      ...initialTopKValue,
+      username: 0,
     },
   });
 
-  const question = form.watch('question');
-
-  const values = useWatch({ control: form.control });
-
-  useEffect(() => {
-    setValues(values as Required<z.infer<typeof formSchema>>);
-  }, [setValues, values]);
-
-  function onSubmit() {
-    refetch();
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormContainer className="p-10">
-          <SimilaritySliderFormField
-            vectorSimilarityWeightName="keywords_similarity_weight"
-            isTooltipShown
-          ></SimilaritySliderFormField>
-          <RerankFormFields></RerankFormFields>
-          <UseKnowledgeGraphFormField name="use_kg"></UseKnowledgeGraphFormField>
-        </FormContainer>
         <FormField
           control={form.control}
-          name="question"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('knowledgeDetails.testText')}</FormLabel>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <FormSlider {...field}></FormSlider>
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="a"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <FormSlider {...field}></FormSlider>
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="b"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <RAGFlowSelect
+                value={field.value}
+                onChange={field.onChange}
+                FormControlComponent={FormControl}
+                options={groupOptions}
+              ></RAGFlowSelect>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="c"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <FormSlider {...field}></FormSlider>
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="d"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   className="bg-colors-background-inverse-weak"
                 ></Textarea>
               </FormControl>
-
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <ButtonLoading
+        <Button
+          variant={'tertiary'}
+          size={'sm'}
           type="submit"
-          disabled={!!!trim(question)}
-          loading={loading}
+          className="w-full"
         >
-          {t('knowledgeDetails.testingLabel')}
-        </ButtonLoading>
+          Test
+        </Button>
       </form>
     </Form>
   );

@@ -1,5 +1,5 @@
 .messageItem {
-  padding: 24px 0;
+  padding: 20px 0;
   .messageItemSection {
     display: inline-block;
   }
@@ -24,8 +24,15 @@
   .messageText {
     .chunkText();
     .messageTextBase();
-    background-color: #e6f4ff;
+    background-color: #fff;
+    box-shadow: 5px 3 8px 0px rgba(42, 139, 242, 0.1);
+    border-radius: 0px 15px 15px 15px;
+    padding: 12px;
     word-break: break-word;
+    .groupButtonContent {
+      width: 100%;
+      justify-content: right;
+    }
   }
   .messageTextDark {
     .chunkText();
@@ -41,7 +48,13 @@
   .messageUserText {
     .chunkText();
     .messageTextBase();
-    background-color: rgba(255, 255, 255, 0.3);
+    // background-color: rgba(255, 255, 255, 0.3);
+    background: #1570ef;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 8px 0px 8px 8px;
     word-break: break-word;
     text-align: justify;
   }

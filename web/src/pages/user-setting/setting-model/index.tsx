@@ -22,7 +22,6 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { CircleHelp } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import SettingTitle from '../components/setting-title';
 import { isLocalLlmFactory } from '../utils';
@@ -304,14 +303,7 @@ const UserSettingModel = () => {
     },
     {
       key: '2',
-      label: (
-        <div className="flex items-center gap-2">
-          {t('modelsToBeAdded')}
-          <Tooltip title={t('modelsToBeAddedTooltip')}>
-            <CircleHelp className="size-4" />
-          </Tooltip>
-        </div>
-      ),
+      label: t('modelsToBeAdded'),
       children: (
         <List
           grid={{
@@ -366,7 +358,7 @@ const UserSettingModel = () => {
   ];
 
   return (
-    <section id="xx" className="w-full space-y-6">
+    <section id="xx" className={styles.modelWrapper}>
       <Spin spinning={loading}>
         <section className={styles.modelContainer}>
           <SettingTitle

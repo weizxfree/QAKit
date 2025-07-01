@@ -73,7 +73,7 @@ const ActionCell = ({
       {isKnowledgeBase || (
         <Tooltip title={t('addToKnowledge')}>
           <Button type="text" onClick={onShowConnectToKnowledgeModal}>
-            <LinkOutlined size={20} />
+            <LinkOutlined size={20} style={{ color: '#1877F2' }} />
           </Button>
         </Tooltip>
       )}
@@ -81,7 +81,7 @@ const ActionCell = ({
       {isKnowledgeBase || (
         <Tooltip title={t('rename', { keyPrefix: 'common' })}>
           <Button type="text" disabled={beingUsed} onClick={onShowRenameModal}>
-            <EditOutlined size={20} />
+            <EditOutlined size={20} style={{ color: '#1877F2' }} />
           </Button>
         </Tooltip>
       )}
@@ -93,7 +93,7 @@ const ActionCell = ({
             onClick={onShowMoveFileModal}
             className="flex items-end"
           >
-            <FolderInput className="size-4" />
+            <FolderInput className="size-4" style={{ color: '#1877F2' }} />
           </Button>
         </Tooltip>
       )}
@@ -105,7 +105,7 @@ const ActionCell = ({
             onClick={handleRemoveFile}
             className="flex items-end"
           >
-            <Trash2 className="size-4" />
+            <Trash2 className="size-4" style={{ color: '#1877F2' }} />
           </Button>
         </Tooltip>
       )}
@@ -117,7 +117,7 @@ const ActionCell = ({
             loading={loading}
             onClick={onDownloadDocument}
           >
-            <DownloadOutlined size={20} />
+            <DownloadOutlined size={20} style={{ color: '#1877F2' }} />
           </Button>
         </Tooltip>
       )}
@@ -129,7 +129,7 @@ const ActionCell = ({
         >
           <Tooltip title={t('preview')}>
             <Button type="text">
-              <EyeOutlined size={20} />
+              <EyeOutlined size={20} style={{ color: '#1877F2' }} />
             </Button>
           </Tooltip>
         </NewDocumentLink>

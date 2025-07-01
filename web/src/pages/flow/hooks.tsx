@@ -39,7 +39,6 @@ import {
   initialBeginValues,
   initialBingValues,
   initialCategorizeValues,
-  initialCodeValues,
   initialConcentratorValues,
   initialCrawlerValues,
   initialDeepLValues,
@@ -140,7 +139,6 @@ export const useInitializeOperatorParams = () => {
       [Operator.Email]: initialEmailValues,
       [Operator.Iteration]: initialIterationValues,
       [Operator.IterationStart]: initialIterationValues,
-      [Operator.Code]: initialCodeValues,
     };
   }, [llmId]);
 

@@ -11,31 +11,19 @@ import { Select, SelectTrigger, SelectValue } from '../ui/select';
 interface IProps {
   id?: string;
   value?: string;
-  onInitialValue?: (value: string, option: any) => void;
-  onChange?: (value: string, option: any) => void;
+  onChange?: (value: string) => void;
   disabled?: boolean;
 }
 
-const LLMSelect = ({ id, value, onInitialValue, onChange, disabled }: IProps) => {
+const LLMSelect = ({ id, value, onChange, disabled }: IProps) => {
   const modelOptions = useComposeLlmOptionsByModelTypes([
     LlmModelType.Chat,
     LlmModelType.Image2text,
   ]);
 
-  if (onInitialValue && value) {
-    for (const modelOption of modelOptions) {
-      for (const option of modelOption.options) {
-        if (option.value === value) {
-          onInitialValue(value, option);
-          break;
-        }
-      }
-    }
-  }  
-
   const content = (
     <div style={{ width: 400 }}>
-      <LlmSettingItems onChange={onChange}
+      <LlmSettingItems
         formItemLayout={{ labelCol: { span: 10 }, wrapperCol: { span: 14 } }}
       ></LlmSettingItems>
     </div>

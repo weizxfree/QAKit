@@ -49,7 +49,7 @@ export const useSendSharedMessage = () => {
   const { createSharedConversation: setConversation } =
     useCreateNextSharedConversation();
   const { handleInputChange, value, setValue } = useHandleMessageInputChange();
-  const { send, answer, done, stopOutputMessage } = useSendMessageWithSse(
+  const { send, answer, done } = useSendMessageWithSse(
     `/api/v1/${from === SharedFrom.Agent ? 'agentbots' : 'chatbots'}/${conversationId}/completions`,
   );
   const {
@@ -144,6 +144,5 @@ export const useSendSharedMessage = () => {
     loading: false,
     derivedMessages,
     hasError,
-    stopOutputMessage,
   };
 };

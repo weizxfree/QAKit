@@ -1,9 +1,4 @@
 import { IRenameTag } from '@/interfaces/database/knowledge';
-import {
-  IFetchDocumentListRequestBody,
-  IFetchKnowledgeListRequestBody,
-  IFetchKnowledgeListRequestParams,
-} from '@/interfaces/request/knowledge';
 import api from '@/utils/api';
 import registerServer from '@/utils/register-server';
 import request, { post } from '@/utils/request';
@@ -64,7 +59,7 @@ const methods = {
   // document manager
   get_document_list: {
     url: get_document_list,
-    method: 'get',
+    method: 'post',
   },
   document_change_status: {
     url: document_change_status,
@@ -174,18 +169,14 @@ export function getKnowledgeGraph(knowledgeId: string) {
   return request.get(api.getKnowledgeGraph(knowledgeId));
 }
 
-export function deleteKnowledgeGraph(knowledgeId: string) {
-  return request.delete(api.getKnowledgeGraph(knowledgeId));
-}
-
 export const listDataset = (
-  params?: IFetchKnowledgeListRequestParams,
-  body?: IFetchKnowledgeListRequestBody,
+  params?: any,
+  body?: any,
 ) => request.post(api.kb_list, { data: body || {}, params });
 
 export const listDocument = (
-  params?: IFetchKnowledgeListRequestParams,
-  body?: IFetchDocumentListRequestBody,
+  params?: any,
+  body?: any,
 ) => request.post(api.get_document_list, { data: body || {}, params });
 
 export default kbService;

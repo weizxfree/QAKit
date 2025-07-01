@@ -13,7 +13,6 @@ function UserSettingLocale() {
         'zh-TRADITIONAL',
         'ja',
         'pt-br',
-        'German',
       ]}
     />
   );

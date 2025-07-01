@@ -21,7 +21,6 @@ import {
   componentMenuList,
   operatorMap,
 } from './constant';
-import { useHandleDrag } from './hooks';
 import OperatorIcon from './operator-icon';
 
 type OperatorItem = {
@@ -29,14 +28,8 @@ type OperatorItem = {
 };
 
 function OperatorCard({ name }: OperatorItem) {
-  const { handleDragStart } = useHandleDrag();
-
   return (
-    <Card
-      draggable
-      onDragStart={handleDragStart(name)}
-      className="bg-colors-background-inverse-weak  border-colors-outline-neutral-standard cursor-pointer"
-    >
+    <Card className="bg-colors-background-inverse-weak  border-colors-outline-neutral-standard">
       <CardContent className="p-2 flex items-center gap-2">
         <OperatorIcon
           name={name}

@@ -6,8 +6,6 @@ const {
   getCanvas,
   getCanvasSSE,
   setCanvas,
-  getListVersion,
-  getVersion,
   listCanvas,
   resetCanvas,
   removeCanvas,
@@ -16,8 +14,6 @@ const {
   testDbConnect,
   getInputElements,
   debug,
-  listCanvasTeam,
-  settingCanvas,
 } = api;
 
 const methods = {
@@ -32,14 +28,6 @@ const methods = {
   setCanvas: {
     url: setCanvas,
     method: 'post',
-  },
-  getListVersion: {
-    url: getListVersion,
-    method: 'get',
-  },
-  getVersion: {
-    url: getVersion,
-    method: 'get',
   },
   listCanvas: {
     url: listCanvas,
@@ -73,16 +61,8 @@ const methods = {
     url: debug,
     method: 'post',
   },
-  listCanvasTeam: {
-    url: listCanvasTeam,
-    method: 'get',
-  },
-  settingCanvas: {
-    url: settingCanvas,
-    method: 'post',
-  },
 } as const;
 
-const flowService = registerServer<keyof typeof methods>(methods, request);
+const chatService = registerServer<keyof typeof methods>(methods, request);
 
-export default flowService;
+export default chatService;

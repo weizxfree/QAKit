@@ -2,50 +2,32 @@
 
 .loginPage {
   display: flex;
-  background-color: rgba(255, 255, 255, 0.1);
+  // background-color: rgba(255, 255, 255, 0.1);
+  background-image: url('@/assets/image/login-bg.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  justify-content: right;
+  align-items: center;
+  height: 100vh;
+  position: relative;
 
   .loginLeft {
-    // width: 610px;
-    width: 40%;
-    background-color: rgba(255, 255, 255, 0.1);
-    height: 100vh;
+    width: 344px;
+    height: 435px;
+    background: #ffffff;
+    box-shadow: 0px 0 15px 0px rgba(0, 32, 65, 0.04);
+    border-radius: 15px 15px 15px 15px;
+    margin-right: 170px;
     display: flex;
-    align-items: center;
+    // align-items: center;
   }
 
   .leftContainer {
-    width: 60%;
-    padding: 5px, 0px, 5px, 0px;
+    // width: 60%;
+    padding: 30px;
     margin: 0 auto;
-  }
-
-  .thirdPartyLoginButton {
-    margin-top: 10px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    // padding-top: 0px;
-
-    .ant-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 40px;
-      font-size: 14px;
-      border-radius: 4px;
-      border: 1px solid #d9d9d9;
-      background: #fff;
-      color: rgba(0, 0, 0, 0.85);
-      transition: all 0.3s;
-
-      &:hover {
-        color: #40a9ff;
-        border-color: #40a9ff;
-      }
-
-      .anticon {
-        font-size: 16px;
-        margin-right: 8px;
-      }
-    }
   }
 
   .loginRight {
@@ -110,13 +92,45 @@
     font-weight: 600;
     line-height: 46px;
     letter-spacing: 0em;
-    height: 80px;
-    margin-bottom: 69px;
+    // height: 80px;
+    margin-bottom: 15px;
 
     // text-align: center;
     span {
-      font-size: 16px;
-      line-height: 24px;
+      // font-size: 16px;
+      // line-height: 24px;
+      font-family:
+        Alibaba PuHuiTi 2,
+        Alibaba PuHuiTi 20;
+      font-weight: 600;
+      font-size: 14px;
+      color: #404447;
+      line-height: 19px;
+    }
+    .loginLogo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      // margin-bottom: 10px;
+      .logo {
+        width: 31px;
+        height: 36px;
+        margin-right: 10px;
+        background-image: url('@/assets/image/logo.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100% 100%;
+      }
+      .name {
+        font-family:
+          Alibaba PuHuiTi 2,
+          Alibaba PuHuiTi 20;
+        font-weight: 500;
+        font-size: 38px;
+        color: #26293b;
+        line-height: 53px;
+        text-align: center;
+      }
     }
   }
 

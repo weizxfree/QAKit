@@ -6,7 +6,6 @@ import {
   useFetchNextConversation,
   useFetchNextConversationList,
   useFetchNextDialog,
-  useFetchNextDialogList,
   useGetChatSearchParams,
   useRemoveNextConversation,
   useRemoveNextDialog,
@@ -203,24 +202,15 @@ export const useEditDialog = () => {
 
 //#region conversation
 
-const useFindPrologueFromDialogList = () => {
-  const { dialogId } = useGetChatSearchParams();
-  const { data: dialogList } = useFetchNextDialogList(true);
-  const prologue = useMemo(() => {
-    return dialogList.find((x) => x.id === dialogId)?.prompt_config.prologue;
-  }, [dialogId, dialogList]);
-
-  return prologue;
-};
-
 export const useSelectDerivedConversationList = () => {
   const { t } = useTranslate('chat');
 
   const [list, setList] = useState<Array<IConversation>>([]);
+  const { data: currentDialog } = useFetchNextDialog();
   const { data: conversationList, loading } = useFetchNextConversationList();
   const { dialogId } = useGetChatSearchParams();
+  const prologue = currentDialog?.prompt_config?.prologue ?? '';
   const { setNewConversationRouteParams } = useSetNewConversationRouteParams();
-  const prologue = useFindPrologueFromDialogList();
 
   const addTemporaryConversation = useCallback(() => {
     const conversationId = getConversationId();
@@ -301,11 +291,13 @@ export const useSelectNextMessages = () => {
     removeMessagesAfterCurrentMessage,
   } = useSelectDerivedMessages();
   const { data: conversation, loading } = useFetchNextConversation();
+  const { data: dialog } = useFetchNextDialog();
   const { conversationId, dialogId, isNew } = useGetChatSearchParams();
-  const prologue = useFindPrologueFromDialogList();
 
   const addPrologue = useCallback(() => {
     if (dialogId !== '' && isNew === 'true') {
+      const prologue = dialog.prompt_config?.prologue;
+
       const nextMessage = {
         role: MessageType.Assistant,
         content: prologue,
@@ -314,7 +306,7 @@ export const useSelectNextMessages = () => {
 
       setDerivedMessages([nextMessage]);
     }
-  }, [dialogId, isNew, prologue, setDerivedMessages]);
+  }, [isNew, dialog, dialogId, setDerivedMessages]);
 
   useEffect(() => {
     addPrologue();
@@ -351,8 +343,8 @@ export const useHandleMessageInputChange = () => {
 
   const handleInputChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     const value = e.target.value;
-    // const nextValue = value.replaceAll('\\n', '\n').replaceAll('\\t', '\t');
-    setValue(value);
+    const nextValue = value.replaceAll('\\n', '\n').replaceAll('\\t', '\t');
+    setValue(nextValue);
   };
 
   return {
@@ -382,10 +374,6 @@ export const useSendNextMessage = (controller: AbortController) => {
   } = useSelectNextMessages();
   const { setConversationIsNew, getConversationIsNew } =
     useSetChatRouteParams();
-
-  const stopOutputMessage = useCallback(() => {
-    controller.abort();
-  }, [controller]);
 
   const sendMessage = useCallback(
     async ({
@@ -502,7 +490,6 @@ export const useSendNextMessage = (controller: AbortController) => {
     ref,
     derivedMessages,
     removeMessageById,
-    stopOutputMessage,
   };
 };
 

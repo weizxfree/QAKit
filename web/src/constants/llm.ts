@@ -28,7 +28,7 @@ export enum LLMFactory {
   TogetherAI = 'TogetherAI',
   PerfXCloud = 'PerfXCloud',
   Upstage = 'Upstage',
-  NovitaAI = 'NovitaAI',
+  NovitaAI = 'novita.ai',
   SILICONFLOW = 'SILICONFLOW',
   PPIO = 'PPIO',
   ZeroOneAI = '01.AI',

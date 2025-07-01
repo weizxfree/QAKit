@@ -13,18 +13,16 @@ interface IProps {
   items?: MenuProps['items'];
   height?: number;
   needsDeletionValidation?: boolean;
-  showDeleteItems?: boolean;
 }
 
 const OperateDropdown = ({
   deleteItem,
   children,
-  iconFontSize = 30,
+  iconFontSize = 20,
   iconFontColor = 'gray',
   items: otherItems = [],
   height = 24,
   needsDeletionValidation = true,
-  showDeleteItems = true,
 }: React.PropsWithChildren<IProps>) => {
   const { t } = useTranslation();
   const showDeleteConfirm = useShowDeleteConfirm();
@@ -46,10 +44,8 @@ const OperateDropdown = ({
   };
 
   const items: MenuProps['items'] = useMemo(() => {
-    const items = [];
-
-    if (showDeleteItems) {
-      items.push({
+    return [
+      {
         key: '1',
         label: (
           <Space>
@@ -57,11 +53,10 @@ const OperateDropdown = ({
             <DeleteOutlined />
           </Space>
         ),
-      });
-    }
-
-    return [...items, ...otherItems];
-  }, [showDeleteItems, otherItems, t]);
+      },
+      ...otherItems,
+    ];
+  }, [t, otherItems]);
 
   return (
     <Dropdown

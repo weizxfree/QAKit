@@ -28,7 +28,6 @@ import {
 } from '../interface';
 import { EditableCell, EditableRow } from './editable-cell';
 
-import { CrossLanguageItem } from '@/components/cross-language-item';
 import Rerank from '@/components/rerank';
 import TopNItem from '@/components/top-n-item';
 import { UseKnowledgeGraphItem } from '@/components/use-knowledge-graph-item';
@@ -166,7 +165,7 @@ const PromptEngine = (
         label={t('multiTurn')}
         tooltip={t('multiTurnTip')}
         name={['prompt_config', 'refine_multiturn']}
-        initialValue={false}
+        initialValue={true}
       >
         <Switch></Switch>
       </Form.Item>
@@ -182,7 +181,6 @@ const PromptEngine = (
         <Switch></Switch>
       </Form.Item>
       <Rerank></Rerank>
-      <CrossLanguageItem></CrossLanguageItem>
       <section className={classNames(styles.variableContainer)}>
         <Row align={'middle'} justify="end">
           <Col span={9} className={styles.variableAlign}>

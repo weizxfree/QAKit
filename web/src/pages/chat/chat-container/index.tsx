@@ -16,7 +16,6 @@ import { useClickDrawer } from '@/components/pdf-drawer/hooks';
 import {
   useFetchNextConversation,
   useGetChatSearchParams,
-  useFetchNextDialog,
 } from '@/hooks/chat-hooks';
 import { useFetchUserInfo } from '@/hooks/user-setting-hooks';
 import { buildMessageUuidWithRole } from '@/utils/chat';
@@ -30,8 +29,6 @@ interface IProps {
 const ChatContainer = ({ controller }: IProps) => {
   const { conversationId } = useGetChatSearchParams();
   const { data: conversation } = useFetchNextConversation();
-  const { data: currentDialog } = useFetchNextDialog();
-    
 
   const {
     value,
@@ -43,7 +40,6 @@ const ChatContainer = ({ controller }: IProps) => {
     handlePressEnter,
     regenerateMessage,
     removeMessageById,
-    stopOutputMessage,
   } = useSendNextMessage(controller);
 
   const { visible, hideModal, documentId, selectedChunk, clickDocumentButton } =
@@ -73,7 +69,7 @@ const ChatContainer = ({ controller }: IProps) => {
                     item={message}
                     nickname={userInfo.nickname}
                     avatar={userInfo.avatar}
-                    avatarDialog={currentDialog.icon}
+                    avatarDialog={conversation.avatar}
                     reference={buildMessageItemReference(
                       {
                         message: derivedMessages,
@@ -104,7 +100,6 @@ const ChatContainer = ({ controller }: IProps) => {
           createConversationBeforeUploadDocument={
             createConversationBeforeUploadDocument
           }
-          stopOutputMessage={stopOutputMessage}
         ></MessageInput>
       </Flex>
       <PdfDrawer

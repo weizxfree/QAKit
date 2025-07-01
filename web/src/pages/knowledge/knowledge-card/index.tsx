@@ -1,11 +1,7 @@
 import { KnowledgeRouteKey } from '@/constants/knowledge';
 import { IKnowledge } from '@/interfaces/database/knowledge';
 import { formatDate } from '@/utils/date';
-import {
-  CalendarOutlined,
-  FileTextOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Badge, Card, Space } from 'antd';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -49,15 +45,18 @@ const KnowledgeCard = ({ item }: IProps) => {
       <Card className={styles.card} onClick={handleCardClick}>
         <div className={styles.container}>
           <div className={styles.content}>
-            <Avatar size={34} icon={<UserOutlined />} src={item.avatar} />
+            <div>
+              <Avatar size={30} icon={<UserOutlined />} src={item.avatar} />
+              <span className={styles.name}>{item.name}</span>
+            </div>
             <OperateDropdown deleteItem={removeKnowledge}></OperateDropdown>
           </div>
           <div className={styles.titleWrapper}>
-            <span
+            {/* <span
               className={theme === 'dark' ? styles.titledark : styles.title}
             >
               {item.name}
-            </span>
+            </span> */}
             <p
               className={
                 theme === 'dark' ? styles.descriptiondark : styles.description
@@ -69,7 +68,8 @@ const KnowledgeCard = ({ item }: IProps) => {
           <div className={styles.footer}>
             <div className={styles.footerTop}>
               <div className={styles.bottomLeft}>
-                <FileTextOutlined className={styles.leftIcon} />
+                {/* <FileTextOutlined className={styles.leftIcon} /> */}
+                <span className={styles.leftIconDoc}></span>
                 <span className={styles.rightText}>
                   <Space>
                     {item.doc_num}
@@ -80,7 +80,8 @@ const KnowledgeCard = ({ item }: IProps) => {
             </div>
             <div className={styles.bottom}>
               <div className={styles.bottomLeft}>
-                <CalendarOutlined className={styles.leftIcon} />
+                <span className={styles.leftIconDate}></span>
+                {/* <CalendarOutlined className={styles.leftIconDate} /> */}
                 <span className={styles.rightText}>
                   {formatDate(item.update_time)}
                 </span>

@@ -11,7 +11,6 @@ interface IProps extends React.PropsWithChildren {
   documentName: string;
   documentId?: string;
   prefix?: string;
-  className?: string;
 }
 
 const NewDocumentLink = ({
@@ -22,7 +21,6 @@ const NewDocumentLink = ({
   documentId,
   documentName,
   prefix = 'file',
-  className,
 }: IProps) => {
   let nextLink = link;
   const extension = getExtension(documentName);
@@ -40,8 +38,7 @@ const NewDocumentLink = ({
       }
       href={nextLink}
       rel="noreferrer"
-      style={{ color: className ? '' : color, wordBreak: 'break-all' }}
-      className={className}
+      style={{ color, wordBreak: 'break-all' }}
     >
       {children}
     </a>

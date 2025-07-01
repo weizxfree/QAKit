@@ -46,7 +46,7 @@ import { RewriteNode } from './node/rewrite-node';
 import { SwitchNode } from './node/switch-node';
 import { TemplateNode } from './node/template-node';
 
-export const nodeTypes: NodeTypes = {
+const nodeTypes: NodeTypes = {
   ragNode: RagNode,
   categorizeNode: CategorizeNode,
   beginNode: BeginNode,
@@ -66,7 +66,7 @@ export const nodeTypes: NodeTypes = {
   iterationStartNode: IterationStartNode,
 };
 
-export const edgeTypes = {
+const edgeTypes = {
   buttonEdge: ButtonEdge,
 };
 

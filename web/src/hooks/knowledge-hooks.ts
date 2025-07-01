@@ -7,7 +7,6 @@ import {
 } from '@/interfaces/database/knowledge';
 import i18n from '@/locales/config';
 import kbService, {
-  deleteKnowledgeGraph,
   getKnowledgeGraph,
   listDataset,
   listTag,
@@ -92,7 +91,6 @@ export const useInfiniteFetchKnowledgeList = () => {
   const debouncedSearchString = useDebounce(searchString, { wait: 500 });
 
   const PageSize = 30;
-
   const {
     data,
     error,
@@ -141,7 +139,7 @@ export const useCreateKnowledge = () => {
     isPending: loading,
     mutateAsync,
   } = useMutation({
-    mutationKey: ['infiniteFetchKnowledgeList'],
+    mutationKey: ['createKnowledge'],
     mutationFn: async (params: { id?: string; name: string }) => {
       const { data = {} } = await kbService.createKb(params);
       if (data.code === 0) {
@@ -182,7 +180,7 @@ export const useDeleteKnowledge = () => {
 
 //#region knowledge configuration
 
-export const useUpdateKnowledge = (shouldFetchList = false) => {
+export const useUpdateKnowledge = () => {
   const knowledgeBaseId = useKnowledgeBaseId();
   const queryClient = useQueryClient();
   const {
@@ -193,18 +191,12 @@ export const useUpdateKnowledge = (shouldFetchList = false) => {
     mutationKey: ['saveKnowledge'],
     mutationFn: async (params: Record<string, any>) => {
       const { data = {} } = await kbService.updateKb({
-        kb_id: params?.kb_id ? params?.kb_id : knowledgeBaseId,
+        kb_id: knowledgeBaseId,
         ...params,
       });
       if (data.code === 0) {
         message.success(i18n.t(`message.updated`));
-        if (shouldFetchList) {
-          queryClient.invalidateQueries({
-            queryKey: ['fetchKnowledgeListByPage'],
-          });
-        } else {
-          queryClient.invalidateQueries({ queryKey: ['fetchKnowledgeDetail'] });
-        }
+        queryClient.invalidateQueries({ queryKey: ['fetchKnowledgeDetail'] });
       }
       return data;
     },
@@ -401,28 +393,3 @@ export function useFetchKnowledgeGraph() {
 
   return { data, loading };
 }
-
-export const useRemoveKnowledgeGraph = () => {
-  const knowledgeBaseId = useKnowledgeBaseId();
-
-  const queryClient = useQueryClient();
-  const {
-    data,
-    isPending: loading,
-    mutateAsync,
-  } = useMutation({
-    mutationKey: ['removeKnowledgeGraph'],
-    mutationFn: async () => {
-      const { data } = await deleteKnowledgeGraph(knowledgeBaseId);
-      if (data.code === 0) {
-        message.success(i18n.t(`message.deleted`));
-        queryClient.invalidateQueries({
-          queryKey: ['fetchKnowledgeGraph'],
-        });
-      }
-      return data?.code;
-    },
-  });
-
-  return { data, loading, removeKnowledgeGraph: mutateAsync };
-};

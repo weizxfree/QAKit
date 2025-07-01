@@ -15,7 +15,7 @@ export default defineConfig({
   esbuildMinifyIIFE: true,
   icons: {},
   hash: true,
-  favicons: ['/logo.svg'],
+  favicons: ['/logo1.svg'],
   clickToComponent: {},
   history: {
     type: 'browser',
@@ -38,7 +38,7 @@ export default defineConfig({
   proxy: [
     {
       context: ['/api', '/v1'],
-      target: 'http://127.0.0.1:9380/',
+      target: 'http://127.0.0.1:9380/',  // 你不用管这个呀，http://154.219.102.235/
       changeOrigin: true,
       ws: true,
       logger: console,

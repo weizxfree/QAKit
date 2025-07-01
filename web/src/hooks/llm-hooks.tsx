@@ -18,7 +18,7 @@ import { getLLMIconName, getRealModelName } from '@/utils/llm-util';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Flex, message } from 'antd';
 import { DefaultOptionType } from 'antd/es/select';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const useFetchLlmList = (
@@ -71,14 +71,13 @@ function buildLlmOptionsWithIcon(x: IThirdOAIModel) {
     ),
     value: `${x.llm_name}@${x.fid}`,
     disabled: !x.available,
-    is_tools: x.is_tools,
   };
 }
 
 export const useSelectLlmOptionsByModelType = () => {
   const llmInfo: IThirdOAIModelCollection = useFetchLlmList();
 
-  const groupImage2TextOptions = useCallback(() => {
+  const groupImage2TextOptions = () => {
     const modelType = LlmModelType.Image2text;
     const modelTag = modelType.toUpperCase();
 
@@ -97,32 +96,27 @@ export const useSelectLlmOptionsByModelType = () => {
         };
       })
       .filter((x) => x.options.length > 0);
-  }, [llmInfo]);
+  };
 
-  const groupOptionsByModelType = useCallback(
-    (modelType: LlmModelType) => {
-      return Object.entries(llmInfo)
-        .filter(([, value]) =>
-          modelType
-            ? value.some((x) => x.model_type.includes(modelType))
-            : true,
-        )
-        .map(([key, value]) => {
-          return {
-            label: key,
-            options: value
-              .filter(
-                (x) =>
-                  (modelType ? x.model_type.includes(modelType) : true) &&
-                  x.available,
-              )
-              .map(buildLlmOptionsWithIcon),
-          };
-        })
-        .filter((x) => x.options.length > 0);
-    },
-    [llmInfo],
-  );
+  const groupOptionsByModelType = (modelType: LlmModelType) => {
+    return Object.entries(llmInfo)
+      .filter(([, value]) =>
+        modelType ? value.some((x) => x.model_type.includes(modelType)) : true,
+      )
+      .map(([key, value]) => {
+        return {
+          label: key,
+          options: value
+            .filter(
+              (x) =>
+                (modelType ? x.model_type.includes(modelType) : true) &&
+                x.available,
+            )
+            .map(buildLlmOptionsWithIcon),
+        };
+      })
+      .filter((x) => x.options.length > 0);
+  };
 
   return {
     [LlmModelType.Chat]: groupOptionsByModelType(LlmModelType.Chat),
@@ -143,7 +137,7 @@ export const useComposeLlmOptionsByModelTypes = (
 
   return modelTypes.reduce<
     (DefaultOptionType & {
-      options: { label: JSX.Element; value: string; disabled: boolean; is_tools: boolean }[];
+      options: { label: JSX.Element; value: string; disabled: boolean }[];
     })[]
   >((pre, cur) => {
     const options = allOptions[cur];

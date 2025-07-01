@@ -17,12 +17,10 @@ import { useForm } from 'react-hook-form';
 import { BeginId, Operator, operatorMap } from '../constant';
 import { FlowFormContext } from '../context';
 import { RunTooltip } from '../flow-tooltip';
-import { useHandleNodeNameChange } from '../hooks';
-import { useHandleFormValuesChange } from '../hooks/use-watch-form-change';
+import { useHandleFormValuesChange, useHandleNodeNameChange } from '../hooks';
 import OperatorIcon from '../operator-icon';
 import {
   buildCategorizeListFromObject,
-  convertToObjectArray,
   needsSingleStepDebugging,
 } from '../utils';
 import SingleDebugDrawer from './single-debug-drawer';
@@ -67,36 +65,25 @@ const FormSheet = ({
 
   const { t } = useTranslate('flow');
 
-  const { handleValuesChange } = useHandleFormValuesChange(
-    operatorName,
-    node?.id,
-    form,
-  );
+  const { handleValuesChange } = useHandleFormValuesChange(node?.id);
 
   useEffect(() => {
-    if (visible && !form.formState.isDirty) {
+    if (visible) {
       if (node?.id !== previousId.current) {
+        // form.resetFields();
         form.reset();
         form.clearErrors();
       }
-
-      const formData = node?.data?.form;
 
       if (operatorName === Operator.Categorize) {
         const items = buildCategorizeListFromObject(
           get(node, 'data.form.category_description', {}),
         );
+        const formData = node?.data?.form;
         if (isPlainObject(formData)) {
           //   form.setFieldsValue({ ...formData, items });
-          console.info('xxx');
           form.reset({ ...formData, items });
         }
-      }
-      if (operatorName === Operator.Message) {
-        form.reset({
-          ...formData,
-          content: convertToObjectArray(formData.content),
-        });
       } else {
         // form.setFieldsValue(node?.data?.form);
         form.reset(node?.data?.form);
@@ -108,7 +95,7 @@ const FormSheet = ({
   return (
     <Sheet open={visible} modal={false}>
       <SheetTitle className="hidden"></SheetTitle>
-      <SheetContent className={cn('top-20 p-0')} closeIcon={false}>
+      <SheetContent className={cn('bg-white top-20 p-0')} closeIcon={false}>
         <SheetHeader>
           <section className="flex-col border-b py-2 px-5">
             <div className="flex items-center gap-2 pb-3">
@@ -142,7 +129,7 @@ const FormSheet = ({
             <span>{t(`${lowerFirst(operatorName)}Description`)}</span>
           </section>
         </SheetHeader>
-        <section className="pt-4 overflow-auto max-h-[85vh]">
+        <section className="pt-4">
           {visible && (
             <FlowFormContext.Provider value={node}>
               <OperatorForm

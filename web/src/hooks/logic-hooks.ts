@@ -96,6 +96,7 @@ export const useGetPaginationWithRouter = () => {
       pageSize: pageSize,
       pageSizeOptions: [1, 2, 10, 20, 50, 100],
       onChange: onPageChange,
+      size: 'small',
       showTotal: (total) => `${t('total')} ${total}`,
     };
   }, [t, onPageChange, page, pageSize]);
@@ -160,11 +161,6 @@ export const useSendMessageWithSse = (
   const [answer, setAnswer] = useState<IAnswer>({} as IAnswer);
   const [done, setDone] = useState(true);
   const timer = useRef<any>();
-  const sseRef = useRef<AbortController>();
-
-  const initializeSseRef = useCallback(() => {
-    sseRef.current = new AbortController();
-  }, []);
 
   const resetAnswer = useCallback(() => {
     if (timer.current) {
@@ -181,7 +177,6 @@ export const useSendMessageWithSse = (
       body: any,
       controller?: AbortController,
     ): Promise<{ response: Response; data: ResponseType } | undefined> => {
-      initializeSseRef();
       try {
         setDone(false);
         const response = await fetch(url, {
@@ -191,7 +186,7 @@ export const useSendMessageWithSse = (
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(body),
-          signal: controller?.signal || sseRef.current?.signal,
+          signal: controller?.signal,
         });
 
         const res = response.clone().json();
@@ -236,14 +231,10 @@ export const useSendMessageWithSse = (
         console.warn(e);
       }
     },
-    [initializeSseRef, url, resetAnswer],
+    [url, resetAnswer],
   );
 
-  const stopOutputMessage = useCallback(() => {
-    sseRef.current?.abort();
-  }, []);
-
-  return { send, answer, done, setDone, resetAnswer, stopOutputMessage };
+  return { send, answer, done, setDone, resetAnswer };
 };
 
 export const useSpeechWithSse = (url: string = api.tts) => {

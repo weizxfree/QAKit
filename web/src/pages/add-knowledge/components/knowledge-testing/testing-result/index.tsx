@@ -1,4 +1,5 @@
 import { ReactComponent as SelectedFilesCollapseIcon } from '@/assets/svg/selected-files-collapse.svg';
+import Image from '@/components/image';
 import { useTranslate } from '@/hooks/common-hooks';
 import { ITestingChunk } from '@/interfaces/database/knowledge';
 import {
@@ -6,9 +7,9 @@ import {
   Collapse,
   Empty,
   Flex,
-  Image,
   Pagination,
   PaginationProps,
+  Popover,
   Space,
 } from 'antd';
 import camelCase from 'lodash/camelCase';
@@ -19,8 +20,6 @@ import {
   useSelectTestingResult,
 } from '@/hooks/knowledge-hooks';
 import { useGetPaginationWithRouter } from '@/hooks/logic-hooks';
-import { api_host } from '@/utils/api';
-import { showImage } from '@/utils/chat';
 import { useCallback, useState } from 'react';
 import styles from './index.less';
 
@@ -114,16 +113,22 @@ const TestingResult = ({ handleTesting }: IProps) => {
         {isSuccess && chunks.length > 0 ? (
           chunks?.map((x) => (
             <Card key={x.chunk_id} title={<ChunkTitle item={x}></ChunkTitle>}>
-              <div className="flex justify-center">
-                {showImage(x.doc_type_kwd) && (
-                  <Image
-                    id={x.image_id}
-                    className={'object-contain max-h-[30vh] w-full text-center'}
-                    src={`${api_host}/document/image/${x.image_id}`}
-                  ></Image>
+              <Flex gap={'middle'}>
+                {x.img_id && (
+                  <Popover
+                    placement="left"
+                    content={
+                      <Image
+                        id={x.img_id}
+                        className={styles.imagePreview}
+                      ></Image>
+                    }
+                  >
+                    <Image id={x.img_id} className={styles.image}></Image>
+                  </Popover>
                 )}
-              </div>
-              <div className="pt-4">{x.content_with_weight}</div>
+                <div>{x.content_with_weight}</div>
+              </Flex>
             </Card>
           ))
         ) : isSuccess && chunks.length === 0 ? (

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SwitchFormField } from './switch-fom-field';
 
 type IProps = {
-  filedName: string[] | string;
+  filedName: string[];
 };
 
 export function UseKnowledgeGraphItem({ filedName }: IProps) {
@@ -34,7 +34,6 @@ export function UseKnowledgeGraphFormField({
     <SwitchFormField
       name={name}
       label={t('chat.useKnowledgeGraph')}
-      tooltip={t('chat.useKnowledgeGraphTip')}
     ></SwitchFormField>
   );
 }

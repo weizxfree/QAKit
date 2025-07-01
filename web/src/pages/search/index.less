@@ -1,6 +1,16 @@
 .searchPage {
   background-position: center;
   background-size: cover;
+
+  .myLayout {
+    height: 100%;
+    width: 100%;
+    // background-size: contain;
+    background-image: url(@/assets/image/search/searchbg.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+  }
   .card {
     width: 100%;
     :global(.ant-card-body) {
@@ -27,6 +37,13 @@
   }
   inset-inline-start: 0;
 
+  .header {
+    font-weight: 400;
+    font-size: 14px;
+    color: #212121;
+    line-height: 19px;
+    padding: 12px 16px 8px;
+  }
   .modelForm {
     display: flex;
     padding: 24px;
@@ -39,8 +56,8 @@
   .list {
     padding-top: 10px;
     width: 100%;
-    height: calc(100vh - 76px);
-    overflow: auto;
+    height: calc(100vh - 39px);
+    // overflow: auto;
     // background-color: transparent;
     // &::-webkit-scrollbar-track {
     //   background: transparent;
@@ -50,11 +67,19 @@
     width: 100%;
   }
   .knowledgeName {
-    width: 116px;
-    max-width: 270px;
+    width: 98px;
+    // max-width: 270px;
+    font-weight: 400;
+    font-size: 11px;
+    color: #0d1c2e;
+    line-height: 24px;
   }
   .embeddingId {
-    width: 170px;
+    width: 155px;
+    font-weight: 400;
+    font-size: 11px;
+    color: #0d1c2e;
+    line-height: 24px;
   }
 }
 
@@ -106,41 +131,61 @@
 .input() {
   :global(.ant-input-affix-wrapper) {
     padding: 4px 12px;
-    border-start-start-radius: 30px !important;
-    border-end-start-radius: 30px !important;
+    // border-start-start-radius: 30px !important;
+    // border-end-start-radius: 30px !important;
   }
   // :global(.ant-input-group-addon) {
   //   background-color: transparent;
   // }
-  input {
-    height: 40px;
-  }
-  button {
-    height: 50px !important;
-    border-start-end-radius: 30px !important;
-    border-end-end-radius: 30px !important;
-  }
+  // input {
+  //   height: 40px;
+  // }
+  // button {
+  //   height: 50px !important;
+  //   border-start-end-radius: 30px !important;
+  //   border-end-end-radius: 30px !important;
+  // }
 }
 
 .globalInput {
   width: 600px;
+  // background: #FFFFFF;
+  // border-radius: 15px 15px 15px 15px;
+  // border: 2px solid #2A8BF2;
   position: sticky;
-  top: 30%;
+  top: 200px;
   z-index: 1;
-  .input();
+  // font-weight: 400;
+  // font-size: 18px;
+  // color: rgba(112,124,151,0.5);
+  // line-height: 21px;
+  // .input();
 }
 .partialInput {
-  width: 100%;
+  width: 600px;
   position: sticky;
   top: 0;
   z-index: 1;
-  .input();
+  // .input();
 }
-
-.searchInput {
-  :global(.ant-input-search-button) {
-    display: none;
-  }
+.sufSearch {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  background-image: url(@/assets/image/search/searchicon.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+.searchTitle {
+  position: sticky;
+  top: 150px;
+  font-weight: 500;
+  font-size: 27px;
+  color: #0d1c2e;
+  line-height: 20px;
+  width: 100%;
+  text-align: left;
 }
 
 .appIcon {

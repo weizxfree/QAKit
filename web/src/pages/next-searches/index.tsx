@@ -1,5 +1,4 @@
 import ListFilterBar from '@/components/list-filter-bar';
-import { Button } from '@/components/ui/button';
 import { useFetchFlowList } from '@/hooks/flow-hooks';
 import { Plus } from 'lucide-react';
 import { SearchCard } from './search-card';
@@ -11,10 +10,8 @@ export default function SearchList() {
     <section>
       <div className="px-8 pt-8">
         <ListFilterBar title="Search apps">
-          <Button variant={'tertiary'} size={'sm'}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create app
-          </Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Create app
         </ListFilterBar>
       </div>
       <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 max-h-[84vh] overflow-auto px-8">

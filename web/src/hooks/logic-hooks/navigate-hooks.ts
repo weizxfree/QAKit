@@ -94,13 +94,6 @@ export const useNavigatePage = () => {
     [getQueryString, id, navigate],
   );
 
-  const navigateToFiles = useCallback(
-    (folderId?: string) => {
-      navigate(`${Routes.Files}?folderId=${folderId}`);
-    },
-    [navigate],
-  );
-
   return {
     navigateToDatasetList,
     navigateToDataset,
@@ -116,6 +109,5 @@ export const useNavigatePage = () => {
     navigateToAgentTemplates,
     navigateToSearchList,
     navigateToSearch,
-    navigateToFiles,
   };
 };

@@ -84,7 +84,7 @@ export const useGetChatSearchParams = () => {
 
 //#region dialog
 
-export const useFetchNextDialogList = (pureFetch = false) => {
+export const useFetchNextDialogList = () => {
   const { handleClickDialog } = useClickDialogCard();
   const { dialogId } = useGetChatSearchParams();
 
@@ -103,14 +103,12 @@ export const useFetchNextDialogList = (pureFetch = false) => {
 
       if (data.code === 0) {
         const list: IDialog[] = data.data;
-        if (!pureFetch) {
-          if (list.length > 0) {
-            if (list.every((x) => x.id !== dialogId)) {
-              handleClickDialog(data.data[0].id);
-            }
-          } else {
-            history.push('/chat');
+        if (list.length > 0) {
+          if (list.every((x) => x.id !== dialogId)) {
+            handleClickDialog(data.data[0].id);
           }
+        } else {
+          history.push('/chat');
         }
       }
 

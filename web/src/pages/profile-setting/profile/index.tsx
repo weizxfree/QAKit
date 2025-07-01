@@ -26,12 +26,12 @@ export default function Profile() {
       <div className="space-y-6 max-w-[600px]">
         <div className="space-y-2">
           <label className="text-sm text-muted-foreground">User name</label>
-          <Input defaultValue="username" />
+          <Input defaultValue="yifanwu92" />
         </div>
 
         <div className="space-y-2">
           <label className="text-sm text-muted-foreground">Email</label>
-          <Input defaultValue="address@example.com" />
+          <Input defaultValue="yifanwu92@gmail.com" />
         </div>
 
         <div className="space-y-2">

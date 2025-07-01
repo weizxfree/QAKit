@@ -1,56 +1,16 @@
 import { useSetModalState } from '@/hooks/common-hooks';
-import { useFetchFlowTemplates, useSetFlow } from '@/hooks/flow-hooks';
-import { useHandleSearchChange } from '@/hooks/logic-hooks';
-import flowService from '@/services/flow-service';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useDebounce } from 'ahooks';
+import {
+  useFetchFlowList,
+  useFetchFlowTemplates,
+  useSetFlow,
+} from '@/hooks/flow-hooks';
 import { useCallback } from 'react';
 import { useNavigate } from 'umi';
 
 export const useFetchDataOnMount = () => {
-  const { searchString, handleInputChange } = useHandleSearchChange();
-  const debouncedSearchString = useDebounce(searchString, { wait: 500 });
+  const { data, loading } = useFetchFlowList();
 
-  const PageSize = 30;
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ['infiniteFetchFlowListTeam', debouncedSearchString],
-    queryFn: async ({ pageParam }) => {
-      const { data } = await flowService.listCanvasTeam({
-        page: pageParam,
-        page_size: PageSize,
-        keywords: debouncedSearchString,
-      });
-      const list = data?.data ?? [];
-      return list;
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, pages, lastPageParam) => {
-      if (lastPageParam * PageSize <= lastPage.total) {
-        return lastPageParam + 1;
-      }
-      return undefined;
-    },
-  });
-  return {
-    data,
-    loading: isFetching,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isFetchingNextPage,
-    status,
-    handleInputChange,
-    searchString,
-  };
+  return { list: data, loading };
 };
 
 export const useSaveFlow = () => {

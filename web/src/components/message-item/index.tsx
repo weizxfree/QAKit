@@ -1,4 +1,3 @@
-import { ReactComponent as AssistantIcon } from '@/assets/svg/assistant.svg';
 import { MessageType } from '@/constants/chat';
 import { useSetModalState } from '@/hooks/common-hooks';
 import { IReference, IReferenceChunk } from '@/interfaces/database/chat';
@@ -18,7 +17,7 @@ import FileIcon from '../file-icon';
 import IndentedTreeModal from '../indented-tree/modal';
 import NewDocumentLink from '../new-document-link';
 import { useTheme } from '../theme-provider';
-import { AssistantGroupButton, UserGroupButton } from './group-button';
+import { AssistantGroupButton } from './group-button';
 import styles from './index.less';
 
 const { Text } = Typography;
@@ -103,46 +102,21 @@ const MessageItem = ({
         })}
       >
         <div
+          // className={styles.messageItemContent}
           className={classNames(styles.messageItemContent, {
             [styles.messageItemContentReverse]: item.role === MessageType.User,
           })}
         >
           {visibleAvatar &&
             (item.role === MessageType.User ? (
-              <Avatar size={40} src={avatar ?? '/logo.svg'} />
+              <Avatar size={40} src={avatar ?? '/logo.png'} />
             ) : avatarDialog ? (
               <Avatar size={40} src={avatarDialog} />
             ) : (
-              <AssistantIcon />
+              <Avatar size={40} src="/logo.png" />
             ))}
 
           <Flex vertical gap={8} flex={1}>
-            <Space>
-              {isAssistant ? (
-                index !== 0 && (
-                  <AssistantGroupButton
-                    messageId={item.id}
-                    content={item.content}
-                    prompt={item.prompt}
-                    showLikeButton={showLikeButton}
-                    audioBinary={item.audio_binary}
-                    showLoudspeaker={showLoudspeaker}
-                  ></AssistantGroupButton>
-                )
-              ) : (
-                <UserGroupButton
-                  content={item.content}
-                  messageId={item.id}
-                  removeMessageById={removeMessageById}
-                  regenerateMessage={
-                    regenerateMessage && handleRegenerateMessage
-                  }
-                  sendLoading={sendLoading}
-                ></UserGroupButton>
-              )}
-
-              {/* <b>{isAssistant ? '' : nickname}</b> */}
-            </Space>
             <div
               className={
                 isAssistant
@@ -158,6 +132,31 @@ const MessageItem = ({
                 reference={reference}
                 clickDocumentButton={clickDocumentButton}
               ></MarkdownContent>
+              <Space className={styles.groupButtonContent}>
+                {isAssistant ? (
+                  index !== 0 && (
+                    <AssistantGroupButton
+                      messageId={item.id}
+                      content={item.content}
+                      prompt={item.prompt}
+                      showLikeButton={showLikeButton}
+                      audioBinary={item.audio_binary}
+                      showLoudspeaker={showLoudspeaker}
+                    ></AssistantGroupButton>
+                  )
+                ) : (
+                  <></>
+                  // <UserGroupButton
+                  //   content={item.content}
+                  //   messageId={item.id}
+                  //   removeMessageById={removeMessageById}
+                  //   regenerateMessage={
+                  //     regenerateMessage && handleRegenerateMessage
+                  //   }
+                  //   sendLoading={sendLoading}
+                  // ></UserGroupButton>
+                )}
+              </Space>
             </div>
             {isAssistant && referenceDocumentList.length > 0 && (
               <List

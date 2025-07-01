@@ -5,23 +5,15 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 interface SwitchFormItemProps {
   name: string;
   label: ReactNode;
-  vertical?: boolean;
-  tooltip?: ReactNode;
 }
 
-export function SwitchFormField({
-  label,
-  name,
-  vertical = true,
-  tooltip,
-}: SwitchFormItemProps) {
+export function SwitchFormField({ label, name }: SwitchFormItemProps) {
   const form = useFormContext();
 
   return (
@@ -29,14 +21,8 @@ export function SwitchFormField({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem
-          className={cn('flex', {
-            'gap-2': vertical,
-            'flex-col': vertical,
-            'justify-between': !vertical,
-          })}
-        >
-          <FormLabel tooltip={tooltip}>{label}</FormLabel>
+        <FormItem className="flex justify-between">
+          <FormLabel className="text-base">{label}</FormLabel>
           <FormControl>
             <Switch
               checked={field.value}

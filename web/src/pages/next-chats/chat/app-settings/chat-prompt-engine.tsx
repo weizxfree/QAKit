@@ -23,7 +23,7 @@ export function ChatPromptEngine() {
 
   return (
     <section>
-      <Subhead>Prompt engine</Subhead>
+      <Subhead>Prompt Engine</Subhead>
       <div className="space-y-8">
         <FormField
           control={form.control}

@@ -38,12 +38,6 @@ const ApiKeyModal = ({
     return onOk(ret);
   };
 
-  const handleKeyDown = async (e) => {
-    if (e.key === 'Enter') {
-      await handleOk();
-    }
-  };
-
   useEffect(() => {
     if (visible) {
       form.setFieldValue('api_key', initialValue);
@@ -73,7 +67,7 @@ const ApiKeyModal = ({
           tooltip={t('apiKeyTip')}
           rules={[{ required: true, message: t('apiKeyMessage') }]}
         >
-          <Input onKeyDown={handleKeyDown} />
+          <Input />
         </Form.Item>
         {modelsWithBaseUrl.some((x) => x === llmFactory) && (
           <Form.Item<FieldType>
@@ -81,10 +75,7 @@ const ApiKeyModal = ({
             name="base_url"
             tooltip={t('baseUrlTip')}
           >
-            <Input
-              placeholder="https://api.openai.com/v1"
-              onKeyDown={handleKeyDown}
-            />
+            <Input placeholder="https://api.openai.com/v1" />
           </Form.Item>
         )}
         {llmFactory?.toLowerCase() === 'Minimax'.toLowerCase() && (

@@ -40,12 +40,6 @@ const HunyuanModal = ({
     onOk?.(data);
   };
 
-  const handleKeyDown = async (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      await handleOk();
-    }
-  };
-
   return (
     <Modal
       title={t('addLlmTitle', { name: llmFactory })}
@@ -67,20 +61,14 @@ const HunyuanModal = ({
           name="hunyuan_sid"
           rules={[{ required: true, message: t('HunyuanSIDMessage') }]}
         >
-          <Input
-            placeholder={t('HunyuanSIDMessage')}
-            onKeyDown={handleKeyDown}
-          />
+          <Input placeholder={t('HunyuanSIDMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('addHunyuanSK')}
           name="hunyuan_sk"
           rules={[{ required: true, message: t('HunyuanSKMessage') }]}
         >
-          <Input
-            placeholder={t('HunyuanSKMessage')}
-            onKeyDown={handleKeyDown}
-          />
+          <Input placeholder={t('HunyuanSKMessage')} />
         </Form.Item>
       </Form>
     </Modal>

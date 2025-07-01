@@ -2,10 +2,8 @@ import { useTranslate } from '@/hooks/common-hooks';
 import { IModalProps } from '@/interfaces/common';
 import { InboxOutlined } from '@ant-design/icons';
 import {
-  Checkbox,
   Flex,
   Modal,
-  Progress,
   Segmented,
   Tabs,
   TabsProps,
@@ -23,12 +21,10 @@ const FileUpload = ({
   directory,
   fileList,
   setFileList,
-  uploadProgress,
 }: {
   directory: boolean;
   fileList: UploadFile[];
   setFileList: Dispatch<SetStateAction<UploadFile[]>>;
-  uploadProgress?: number;
 }) => {
   const { t } = useTranslate('fileManager');
   const props: UploadProps = {
@@ -39,7 +35,7 @@ const FileUpload = ({
       newFileList.splice(index, 1);
       setFileList(newFileList);
     },
-    beforeUpload: (file: UploadFile) => {
+    beforeUpload: (file) => {
       setFileList((pre) => {
         return [...pre, file];
       });
@@ -48,73 +44,38 @@ const FileUpload = ({
     },
     directory,
     fileList,
-    progress: {
-      strokeWidth: 2,
-    },
   };
 
   return (
-    <>
-      <Progress percent={uploadProgress} showInfo={false} />
-      <Dragger {...props} className={styles.uploader}>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <p className="ant-upload-text">{t('uploadTitle')}</p>
-        <p className="ant-upload-hint">{t('uploadDescription')}</p>
-        {false && <p className={styles.uploadLimit}>{t('uploadLimit')}</p>}
-      </Dragger>
-    </>
+    <Dragger {...props} className={styles.uploader}>
+      <p className="ant-upload-drag-icon">
+        <InboxOutlined />
+      </p>
+      <p className="ant-upload-text">{t('uploadTitle')}</p>
+      <p className="ant-upload-hint">{t('uploadDescription')}</p>
+      {false && <p className={styles.uploadLimit}>{t('uploadLimit')}</p>}
+    </Dragger>
   );
 };
-
-interface IFileUploadModalProps
-  extends IModalProps<
-    { parseOnCreation: boolean; directoryFileList: UploadFile[] } | UploadFile[]
-  > {
-  uploadFileList?: UploadFile[];
-  setUploadFileList?: Dispatch<SetStateAction<UploadFile[]>>;
-  uploadProgress?: number;
-  setUploadProgress?: Dispatch<SetStateAction<number>>;
-}
 
 const FileUploadModal = ({
   visible,
   hideModal,
   loading,
   onOk: onFileUploadOk,
-  uploadFileList: fileList,
-  setUploadFileList: setFileList,
-  uploadProgress,
-  setUploadProgress,
-}: IFileUploadModalProps) => {
+}: IModalProps<UploadFile[]>) => {
   const { t } = useTranslate('fileManager');
   const [value, setValue] = useState<string | number>('local');
-  const [parseOnCreation, setParseOnCreation] = useState(false);
-  const [currentFileList, setCurrentFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [directoryFileList, setDirectoryFileList] = useState<UploadFile[]>([]);
 
   const clearFileList = () => {
-    if (setFileList) {
-      setFileList([]);
-      setUploadProgress?.(0);
-    } else {
-      setCurrentFileList([]);
-    }
+    setFileList([]);
     setDirectoryFileList([]);
   };
 
   const onOk = async () => {
-    if (uploadProgress === 100) {
-      hideModal?.();
-      return;
-    }
-
-    const ret = await onFileUploadOk?.(
-      fileList
-        ? { parseOnCreation, directoryFileList }
-        : [...currentFileList, ...directoryFileList],
-    );
+    const ret = await onFileUploadOk?.([...fileList, ...directoryFileList]);
     return ret;
   };
 
@@ -129,9 +90,8 @@ const FileUploadModal = ({
       children: (
         <FileUpload
           directory={false}
-          fileList={fileList ? fileList : currentFileList}
-          setFileList={setFileList ? setFileList : setCurrentFileList}
-          uploadProgress={uploadProgress}
+          fileList={fileList}
+          setFileList={setFileList}
         ></FileUpload>
       ),
     },
@@ -143,7 +103,6 @@ const FileUploadModal = ({
           directory
           fileList={directoryFileList}
           setFileList={setDirectoryFileList}
-          uploadProgress={uploadProgress}
         ></FileUpload>
       ),
     },
@@ -170,15 +129,7 @@ const FileUploadModal = ({
             onChange={setValue}
           />
           {value === 'local' ? (
-            <>
-              <Checkbox
-                checked={parseOnCreation}
-                onChange={(e) => setParseOnCreation(e.target.checked)}
-              >
-                {t('parseOnCreation')}
-              </Checkbox>
-              <Tabs defaultActiveKey="1" items={items} />
-            </>
+            <Tabs defaultActiveKey="1" items={items} />
           ) : (
             t('comingSoon', { keyPrefix: 'common' })
           )}

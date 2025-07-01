@@ -1,4 +1,4 @@
-import { ButtonLoading } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,16 +8,15 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { IModalProps } from '@/interfaces/common';
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileUploader } from '../file-uploader';
 
-type UploaderTabsProps = {
-  setFiles: Dispatch<SetStateAction<File[]>>;
-};
-
-export function UploaderTabs({ setFiles }: UploaderTabsProps) {
+export function UploaderTabs() {
   const { t } = useTranslation();
+
+  const [files, setFiles] = useState<File[]>([]);
+  console.log('🚀 ~ TabsDemo ~ files:', files);
 
   return (
     <Tabs defaultValue="account">
@@ -30,7 +29,6 @@ export function UploaderTabs({ setFiles }: UploaderTabsProps) {
           maxFileCount={8}
           maxSize={8 * 1024 * 1024}
           onValueChange={setFiles}
-          accept={{ '*': [] }}
         />
       </TabsContent>
       <TabsContent value="password">{t('common.comingSoon')}</TabsContent>
@@ -38,17 +36,8 @@ export function UploaderTabs({ setFiles }: UploaderTabsProps) {
   );
 }
 
-export function FileUploadDialog({
-  hideModal,
-  onOk,
-  loading,
-}: IModalProps<File[]>) {
+export function FileUploadDialog({ hideModal }: IModalProps<any>) {
   const { t } = useTranslation();
-  const [files, setFiles] = useState<File[]>([]);
-
-  const handleOk = useCallback(() => {
-    onOk?.(files);
-  }, [files, onOk]);
 
   return (
     <Dialog open onOpenChange={hideModal}>
@@ -56,11 +45,11 @@ export function FileUploadDialog({
         <DialogHeader>
           <DialogTitle>{t('fileManager.uploadFile')}</DialogTitle>
         </DialogHeader>
-        <UploaderTabs setFiles={setFiles}></UploaderTabs>
+        <UploaderTabs></UploaderTabs>
         <DialogFooter>
-          <ButtonLoading type="submit" onClick={handleOk} loading={loading}>
+          <Button type="submit" variant={'tertiary'} size={'sm'}>
             {t('common.save')}
-          </ButtonLoading>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

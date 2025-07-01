@@ -33,6 +33,7 @@ export const ChunkMethodItem = memo(function ChunkMethodItem() {
   const { t } = useTranslate('knowledgeConfiguration');
   const form = Form.useFormInstance();
   const handleChunkMethodSelectChange = useHandleChunkMethodSelectChange(form);
+  const disabled = useHasParsedDocument();
   const parserList = useSelectChunkMethodList();
 
   return (
@@ -44,6 +45,7 @@ export const ChunkMethodItem = memo(function ChunkMethodItem() {
     >
       <Select
         placeholder={t('chunkMethodPlaceholder')}
+        disabled={disabled}
         onChange={handleChunkMethodSelectChange}
         options={parserList}
       ></Select>

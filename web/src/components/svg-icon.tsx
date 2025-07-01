@@ -1,5 +1,4 @@
 import { IconMap } from '@/constants/llm';
-import { cn } from '@/lib/utils';
 import Icon, { UserOutlined } from '@ant-design/icons';
 import { IconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { Avatar } from 'antd';
@@ -39,7 +38,7 @@ const SvgIcon = ({ name, width, height, imgClass, ...restProps }: IProps) => {
           alt=""
           width={width}
           height={height}
-          className={cn(imgClass, 'max-w-full')}
+          className={imgClass}
         />
       )}
       {...(restProps as any)}

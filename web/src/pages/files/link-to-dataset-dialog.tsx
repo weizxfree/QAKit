@@ -1,4 +1,3 @@
-import { ButtonLoading } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { LoadingButton } from '@/components/ui/loading-button';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { useSelectKnowledgeOptions } from '@/hooks/knowledge-hooks';
 import { IModalProps } from '@/interfaces/common';
@@ -69,7 +69,7 @@ function LinkToDatasetForm({
           name="knowledgeIds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('common.name')}</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
                 <MultiSelect
                   options={options}
@@ -113,11 +113,16 @@ export function LinkToDatasetDialog({
           onConnectToKnowledgeOk={onConnectToKnowledgeOk}
         ></LinkToDatasetForm>
         <DialogFooter>
-          <ButtonLoading type="submit" form={FormId} loading={loading}>
+          <LoadingButton
+            type="submit"
+            variant={'tertiary'}
+            form={FormId}
+            loading={loading}
+          >
             <div className="flex gap-2 items-center">
               <Link2 /> Save
             </div>
-          </ButtonLoading>
+          </LoadingButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

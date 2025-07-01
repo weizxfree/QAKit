@@ -44,7 +44,7 @@ const GenerateForm = ({ form }: INextOperatorForm) => {
           name="prompt"
           render={({ field }) => (
             <FormItem>
-              <FormLabel tooltip={t('flow.promptTip')}>
+              <FormLabel tooltip={t('knowledgeConfiguration.promptTip')}>
                 {t('flow.systemPrompt')}
               </FormLabel>
               <FormControl>

@@ -14,7 +14,8 @@ import {
 
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { FormTooltip } from './tooltip';
+import { Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
 const Form = FormProvider;
 
@@ -98,12 +99,21 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && 'text-destructive', className, 'flex pb-0.5')}
+      className={cn(error && 'text-destructive', className, 'flex')}
       htmlFor={formItemId}
       {...props}
     >
       {props.children}
-      {tooltip && <FormTooltip tooltip={tooltip}></FormTooltip>}
+      {tooltip && (
+        <Tooltip>
+          <TooltipTrigger>
+            <Info className="size-3 ml-2" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+      )}
     </Label>
   );
 });

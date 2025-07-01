@@ -41,12 +41,6 @@ const YiyanModal = ({
     onOk?.(data);
   };
 
-  const handleKeyDown = async (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      await handleOk();
-    }
-  };
-
   return (
     <Modal
       title={t('addLlmTitle', { name: llmFactory })}
@@ -80,24 +74,21 @@ const YiyanModal = ({
           name="llm_name"
           rules={[{ required: true, message: t('yiyanModelNameMessage') }]}
         >
-          <Input
-            placeholder={t('yiyanModelNameMessage')}
-            onKeyDown={handleKeyDown}
-          />
+          <Input placeholder={t('yiyanModelNameMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('addyiyanAK')}
           name="yiyan_ak"
           rules={[{ required: true, message: t('yiyanAKMessage') }]}
         >
-          <Input placeholder={t('yiyanAKMessage')} onKeyDown={handleKeyDown} />
+          <Input placeholder={t('yiyanAKMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('addyiyanSK')}
           name="yiyan_sk"
           rules={[{ required: true, message: t('yiyanSKMessage') }]}
         >
-          <Input placeholder={t('yiyanSKMessage')} onKeyDown={handleKeyDown} />
+          <Input placeholder={t('yiyanSKMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('maxTokens')}

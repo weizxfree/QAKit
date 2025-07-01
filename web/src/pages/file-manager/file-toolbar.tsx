@@ -173,7 +173,7 @@ const FileToolbar = ({
           style={{ width: 220 }}
           allowClear
           onChange={handleInputChange}
-          prefix={<SearchOutlined />}
+          suffix={<SearchOutlined />}
         />
 
         {isKnowledgeBase || (

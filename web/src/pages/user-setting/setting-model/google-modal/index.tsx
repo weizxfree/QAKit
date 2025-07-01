@@ -33,12 +33,6 @@ const GoogleModal = ({
     onOk?.(data);
   };
 
-  const handleKeyDown = async (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      await handleOk();
-    }
-  };
-
   return (
     <Modal
       title={t('addLlmTitle', { name: llmFactory })}
@@ -47,7 +41,13 @@ const GoogleModal = ({
       onCancel={hideModal}
       okButtonProps={{ loading }}
     >
-      <Form>
+      <Form
+        name="basic"
+        style={{ maxWidth: 600 }}
+        autoComplete="off"
+        layout={'vertical'}
+        form={form}
+      >
         <Form.Item<FieldType>
           label={t('modelType')}
           name="model_type"
@@ -63,30 +63,21 @@ const GoogleModal = ({
           name="llm_name"
           rules={[{ required: true, message: t('GoogleModelIDMessage') }]}
         >
-          <Input
-            placeholder={t('GoogleModelIDMessage')}
-            onKeyDown={handleKeyDown}
-          />
+          <Input placeholder={t('GoogleModelIDMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('addGoogleProjectID')}
           name="google_project_id"
           rules={[{ required: true, message: t('GoogleProjectIDMessage') }]}
         >
-          <Input
-            placeholder={t('GoogleProjectIDMessage')}
-            onKeyDown={handleKeyDown}
-          />
+          <Input placeholder={t('GoogleProjectIDMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('addGoogleRegion')}
           name="google_region"
           rules={[{ required: true, message: t('GoogleRegionMessage') }]}
         >
-          <Input
-            placeholder={t('GoogleRegionMessage')}
-            onKeyDown={handleKeyDown}
-          />
+          <Input placeholder={t('GoogleRegionMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('addGoogleServiceAccountKey')}
@@ -95,10 +86,7 @@ const GoogleModal = ({
             { required: true, message: t('GoogleServiceAccountKeyMessage') },
           ]}
         >
-          <Input
-            placeholder={t('GoogleServiceAccountKeyMessage')}
-            onKeyDown={handleKeyDown}
-          />
+          <Input placeholder={t('GoogleServiceAccountKeyMessage')} />
         </Form.Item>
         <Form.Item<FieldType>
           label={t('maxTokens')}

@@ -7,7 +7,7 @@ import {
 import { useSetSelectedRecord } from '@/hooks/logic-hooks';
 import { useSelectParserList } from '@/hooks/user-setting-hooks';
 import { getExtension } from '@/utils/document-util';
-import { Divider, Flex, Switch, Table, Tooltip, Typography } from 'antd';
+import { Divider, Flex, Switch, Table, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useTranslation } from 'react-i18next';
 import CreateFileModal from './create-file-modal';
@@ -28,10 +28,8 @@ import RenameModal from './rename-modal';
 import WebCrawlModal from './web-crawl-modal';
 
 import FileUploadModal from '@/components/file-upload-modal';
-import { RunningStatus } from '@/constants/knowledge';
 import { IDocumentInfo } from '@/interfaces/database/document';
 import { formatDate } from '@/utils/date';
-import { CircleHelp } from 'lucide-react';
 import styles from './index.less';
 import { SetMetaModal } from './set-meta-modal';
 
@@ -71,10 +69,6 @@ const KnowledgeFile = () => {
     showDocumentUploadModal,
     onDocumentUploadOk,
     documentUploadLoading,
-    uploadFileList,
-    setUploadFileList,
-    uploadProgress,
-    setUploadProgress,
   } = useHandleUploadDocument();
   const {
     webCrawlUploadVisible,
@@ -158,21 +152,9 @@ const KnowledgeFile = () => {
       ),
     },
     {
-      title: (
-        <span className="flex items-center gap-2">
-          {t('parsingStatus')}
-          <Tooltip title={t('parsingStatusTip')}>
-            <CircleHelp className="size-3" />
-          </Tooltip>
-        </span>
-      ),
+      title: t('parsingStatus'),
       dataIndex: 'run',
       key: 'run',
-      filters: Object.entries(RunningStatus).map(([key, value]) => ({
-        text: t(`runningStatus${value}`),
-        value: value,
-      })),
-      onFilter: (value, record: IDocumentInfo) => record.run === value,
       render: (text, record) => {
         return <ParsingStatusCell record={record}></ParsingStatusCell>;
       },
@@ -209,7 +191,6 @@ const KnowledgeFile = () => {
         showDocumentUploadModal={showDocumentUploadModal}
         searchString={searchString}
         handleInputChange={handleInputChange}
-        documents={documents}
       ></DocumentToolbar>
       <Table
         rowKey="id"
@@ -248,10 +229,6 @@ const KnowledgeFile = () => {
         hideModal={hideDocumentUploadModal}
         loading={documentUploadLoading}
         onOk={onDocumentUploadOk}
-        uploadFileList={uploadFileList}
-        setUploadFileList={setUploadFileList}
-        uploadProgress={uploadProgress}
-        setUploadProgress={setUploadProgress}
       ></FileUploadModal>
       <WebCrawlModal
         visible={webCrawlUploadVisible}

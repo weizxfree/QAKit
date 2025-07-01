@@ -138,8 +138,9 @@ const SearchSidebar = ({
         [styles.transparentSearchSide]: isFirstRender,
       })}
       theme={'light'}
-      width={'20%'}
+      width={'220px'}
     >
+      <div className={styles.header}>知识库列表</div>
       <Spin spinning={loading}>
         <Tree
           className={styles.list}

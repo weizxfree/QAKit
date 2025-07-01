@@ -22,12 +22,6 @@ const CreateAgentModal = ({ visible, hideModal, loading, onOk }: IProps) => {
     return onOk(ret.name);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      handleOk();
-    }
-  };
-
   return (
     <Modal
       title={t('createGraph', { keyPrefix: 'flow' })}
@@ -50,7 +44,7 @@ const CreateAgentModal = ({ visible, hideModal, loading, onOk }: IProps) => {
           name="name"
           rules={[{ required: true, message: t('namePlaceholder') }]}
         >
-          <Input onKeyDown={handleKeyDown} />
+          <Input />
         </Form.Item>
       </Form>
     </Modal>

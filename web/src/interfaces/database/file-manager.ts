@@ -31,9 +31,3 @@ export interface IFolder {
   update_time: number;
   source_type: string;
 }
-
-export type IFetchFileListResult = {
-  files: IFile[];
-  parent_folder: IFolder;
-  total: number;
-};

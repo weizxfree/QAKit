@@ -9,7 +9,6 @@ import {
   useRunNextDocument,
   useSetNextDocumentStatus,
 } from '@/hooks/document-hooks';
-import { IDocumentInfo } from '@/interfaces/database/document';
 import {
   DownOutlined,
   FileOutlined,
@@ -19,8 +18,6 @@ import {
 } from '@ant-design/icons';
 import { Button, Dropdown, Flex, Input, MenuProps, Space } from 'antd';
 import { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
-import { RunningStatus } from './constant';
 
 import styles from './index.less';
 
@@ -31,7 +28,6 @@ interface IProps {
   showDocumentUploadModal(): void;
   searchString: string;
   handleInputChange: React.ChangeEventHandler<HTMLInputElement>;
-  documents: IDocumentInfo[];
 }
 
 const DocumentToolbar = ({
@@ -40,7 +36,6 @@ const DocumentToolbar = ({
   showCreateModal,
   showDocumentUploadModal,
   handleInputChange,
-  documents,
 }: IProps) => {
   const { t } = useTranslate('knowledgeDetails');
   const { removeDocument } = useRemoveNextDocument();
@@ -81,29 +76,18 @@ const DocumentToolbar = ({
   }, [showDocumentUploadModal, showCreateModal, t]);
 
   const handleDelete = useCallback(() => {
-    const deletedKeys = selectedRowKeys.filter(
-      (x) =>
-        !documents
-          .filter((y) => y.run === RunningStatus.RUNNING)
-          .some((y) => y.id === x),
-    );
-    if (deletedKeys.length === 0) {
-      toast.error(t('theDocumentBeingParsedCannotBeDeleted'));
-      return;
-    }
     showDeleteConfirm({
       onOk: () => {
-        removeDocument(deletedKeys);
+        removeDocument(selectedRowKeys);
       },
     });
-  }, [selectedRowKeys, showDeleteConfirm, documents, t, removeDocument]);
+  }, [removeDocument, showDeleteConfirm, selectedRowKeys]);
 
   const runDocument = useCallback(
     (run: number) => {
       runDocumentByIds({
         documentIds: selectedRowKeys,
         run,
-        shouldDelete: false,
       });
     },
     [runDocumentByIds, selectedRowKeys],

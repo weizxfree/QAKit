@@ -1,19 +1,11 @@
-import SvgIcon from '@/components/svg-icon';
-import { useAuth } from '@/hooks/auth-hooks';
-import {
-  useLogin,
-  useLoginChannels,
-  useLoginWithChannel,
-  useRegister,
-} from '@/hooks/login-hooks';
-import { useSystemConfig } from '@/hooks/system-hooks';
+import { useLogin, useRegister } from '@/hooks/login-hooks';
 import { rsaPsw } from '@/utils';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'umi';
-import RightPanel from './right-panel';
+import { Icon, useNavigate } from 'umi';
+// import RightPanel from './right-panel';
 
+import { Domain } from '@/constants/common';
 import styles from './index.less';
 
 const Login = () => {
@@ -21,33 +13,10 @@ const Login = () => {
   const navigate = useNavigate();
   const { login, loading: signLoading } = useLogin();
   const { register, loading: registerLoading } = useRegister();
-  const { channels, loading: channelsLoading } = useLoginChannels();
-  const { login: loginWithChannel, loading: loginWithChannelLoading } =
-    useLoginWithChannel();
-  const { t } = useTranslation('translation', { keyPrefix: 'login' });
-  const loading =
-    signLoading ||
-    registerLoading ||
-    channelsLoading ||
-    loginWithChannelLoading;
-  const { config } = useSystemConfig();
-  const registerEnabled = config?.registerEnabled !== 0;
-
-  const { isLogin } = useAuth();
-  useEffect(() => {
-    if (isLogin) {
-      navigate('/knowledge');
-    }
-  }, [isLogin, navigate]);
-
-  const handleLoginWithChannel = async (channel: string) => {
-    await loginWithChannel(channel);
-  };
+  // const { t } = useTranslation('translation', { keyPrefix: 'login' });
+  const loading = signLoading || registerLoading;
 
   const changeTitle = () => {
-    if (title === 'login' && !registerEnabled) {
-      return;
-    }
     setTitle((title) => (title === 'login' ? 'register' : 'login'));
   };
   const [form] = Form.useForm();
@@ -89,16 +58,25 @@ const Login = () => {
     // wrapperCol: { span: 8 },
   };
 
+  const toGoogle = () => {
+    window.location.href =
+      'https://github.com/login/oauth/authorize?scope=user:email&client_id=302129228f0d96055bee';
+  };
+
   return (
     <div className={styles.loginPage}>
       <div className={styles.loginLeft}>
         <div className={styles.leftContainer}>
           <div className={styles.loginTitle}>
-            <div>{title === 'login' ? t('login') : t('register')}</div>
+            <div className={styles.loginLogo}>
+              <div className={styles.logo}></div>
+              <div className={styles.name}>KnowFlow</div>
+            </div>
             <span>
-              {title === 'login'
+              {title === 'login' ? '很高兴再次见到您' : '很高兴您加入'}
+              {/* {title === 'login'
                 ? t('loginDescription')
-                : t('registerDescription')}
+                : t('registerDescription')} */}
             </span>
           </div>
 
@@ -111,52 +89,52 @@ const Login = () => {
             <Form.Item
               {...formItemLayout}
               name="email"
-              label={t('emailLabel')}
-              rules={[{ required: true, message: t('emailPlaceholder') }]}
+              // label={t('emailLabel')}
+              rules={[{ required: true, message: '请输入邮箱地址' }]}
             >
-              <Input size="large" placeholder={t('emailPlaceholder')} />
+              <Input size="large" placeholder="请输入邮箱地址" />
             </Form.Item>
             {title === 'register' && (
               <Form.Item
                 {...formItemLayout}
                 name="nickname"
-                label={t('nicknameLabel')}
-                rules={[{ required: true, message: t('nicknamePlaceholder') }]}
+                // label={t('nicknameLabel')}
+                rules={[{ required: true, message: '请输入昵称' }]}
               >
-                <Input size="large" placeholder={t('nicknamePlaceholder')} />
+                <Input size="large" placeholder="请输入昵称" />
               </Form.Item>
             )}
             <Form.Item
               {...formItemLayout}
               name="password"
-              label={t('passwordLabel')}
-              rules={[{ required: true, message: t('passwordPlaceholder') }]}
+              // label={t('passwordLabel')}
+              rules={[{ required: true, message: '请输入密码' }]}
             >
               <Input.Password
                 size="large"
-                placeholder={t('passwordPlaceholder')}
+                placeholder="请输入密码"
                 onPressEnter={onCheck}
               />
             </Form.Item>
-            {title === 'login' && (
+            {/* {title === 'login' && (
               <Form.Item name="remember" valuePropName="checked">
-                <Checkbox> {t('rememberMe')}</Checkbox>
+                <Checkbox> 记住我</Checkbox>
               </Form.Item>
-            )}
+            )} */}
             <div>
-              {title === 'login' && registerEnabled && (
+              {title === 'login' && (
                 <div>
-                  {t('signInTip')}
+                  {'没有账号?'}
                   <Button type="link" onClick={changeTitle}>
-                    {t('signUp')}
+                    {'注册'}
                   </Button>
                 </div>
               )}
               {title === 'register' && (
                 <div>
-                  {t('signUpTip')}
+                  {'已有账号?'}
                   <Button type="link" onClick={changeTitle}>
-                    {t('login')}
+                    {'去登录'}
                   </Button>
                 </div>
               )}
@@ -168,37 +146,48 @@ const Login = () => {
               onClick={onCheck}
               loading={loading}
             >
-              {title === 'login' ? t('login') : t('continue')}
+              {title === 'login' ? '登录' : '注册'}
             </Button>
-            {title === 'login' && channels && channels.length > 0 && (
-              <div className={styles.thirdPartyLoginButton}>
-                {channels.map((item) => (
+            {title === 'login' && (
+              <>
+                {/* <Button
+                  block
+                  size="large"
+                  onClick={toGoogle}
+                  style={{ marginTop: 15 }}
+                >
+                  <div>
+                    <Icon
+                      icon="local:google"
+                      style={{ verticalAlign: 'middle', marginRight: 5 }}
+                    />
+                    Sign in with Google
+                  </div>
+                </Button> */}
+                {location.host === Domain && (
                   <Button
-                    key={item.channel}
                     block
                     size="large"
-                    onClick={() => handleLoginWithChannel(item.channel)}
-                    style={{ marginTop: 10 }}
+                    onClick={toGoogle}
+                    style={{ marginTop: 15 }}
                   >
                     <div className="flex items-center">
-                      <SvgIcon
-                        name={item.icon || 'sso'}
-                        width={20}
-                        height={20}
-                        style={{ marginRight: 5 }}
+                      <Icon
+                        icon="local:github"
+                        style={{ verticalAlign: 'middle', marginRight: 5 }}
                       />
-                      Sign in with {item.display_name}
+                      Sign in with Github
                     </div>
                   </Button>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </Form>
         </div>
       </div>
-      <div className={styles.loginRight}>
+      {/* <div className={styles.loginRight}>
         <RightPanel></RightPanel>
-      </div>
+      </div> */}
     </div>
   );
 };

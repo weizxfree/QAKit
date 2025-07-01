@@ -64,14 +64,14 @@ const ChunkCard = ({
     >
       <Flex gap={'middle'} justify={'space-between'}>
         <Checkbox onChange={handleCheck} checked={checked}></Checkbox>
-        {item.image_id && (
+        {item.img_id && (
           <Popover
             placement="right"
             content={
-              <Image id={item.image_id} className={styles.imagePreview}></Image>
+              <Image id={item.img_id} className={styles.imagePreview}></Image>
             }
           >
-            <Image id={item.image_id} className={styles.image}></Image>
+            <Image id={item.img_id} className={styles.image}></Image>
           </Popover>
         )}
 
