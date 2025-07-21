@@ -18,6 +18,7 @@ const ParserListMap = new Map([
       DocumentParserType.One,
       DocumentParserType.Qa,
       DocumentParserType.KnowledgeGraph,
+      DocumentParserType.MinerU,
     ],
   ],
   [
@@ -31,6 +32,7 @@ const ParserListMap = new Map([
       DocumentParserType.Qa,
       DocumentParserType.Manual,
       DocumentParserType.KnowledgeGraph,
+      DocumentParserType.MinerU,
     ],
   ],
   [
@@ -124,6 +126,7 @@ export const useFetchParserListOnMount = (
         DocumentParserType.One,
         DocumentParserType.Qa,
         DocumentParserType.Table,
+        DocumentParserType.MinerU,
       ],
       parserList,
     );

@@ -1,3 +1,4 @@
+import { DocumentParserType } from '@/constants/knowledge';
 import { IReferenceChunk } from '@/interfaces/database/chat';
 import { IDocumentInfo } from '@/interfaces/database/document';
 import { IChunk } from '@/interfaces/database/knowledge';
@@ -21,6 +22,7 @@ import {
   useGetPaginationWithRouter,
   useHandleSearchChange,
 } from './logic-hooks';
+import { useRunMinerUDocument } from './mineru-hooks';
 import {
   useGetKnowledgeSearchParams,
   useSetPaginationParams,
@@ -342,6 +344,7 @@ export const useNextWebCrawl = () => {
 
 export const useRunNextDocument = () => {
   const queryClient = useQueryClient();
+  const { runMinerUDocument } = useRunMinerUDocument();
 
   const {
     data,
@@ -358,18 +361,63 @@ export const useRunNextDocument = () => {
       run: number;
       shouldDelete: boolean;
     }) => {
-      const ret = await kbService.document_run({
+      // Get document info to check parser type for each document
+      const { data: docInfoResponse } = await kbService.document_infos({
         doc_ids: documentIds,
-        run,
-        delete: shouldDelete,
       });
-      const code = get(ret, 'data.code');
-      if (code === 0) {
-        queryClient.invalidateQueries({ queryKey: ['fetchDocumentList'] });
-        message.success(i18n.t('message.operated'));
+      if (docInfoResponse.code !== 0) {
+        throw new Error('Failed to fetch document info');
       }
 
-      return code;
+      const documentInfos = docInfoResponse.data;
+
+      // Separate documents by parser type
+      const minerUDocIds: string[] = [];
+      const otherDocIds: string[] = [];
+
+      documentInfos.forEach((doc: any) => {
+        if (doc.parser_id === DocumentParserType.MinerU) {
+          minerUDocIds.push(doc.id);
+        } else {
+          otherDocIds.push(doc.id);
+        }
+      });
+
+      let allSuccess = true;
+
+      // Process MinerU documents with KnowFlow API
+      if (minerUDocIds.length > 0) {
+        const ret = await runMinerUDocument({
+          doc_ids: minerUDocIds,
+          run,
+          delete: shouldDelete,
+        });
+        const code = get(ret, 'code');
+        if (code !== 0) {
+          allSuccess = false;
+        }
+      }
+
+      // Process other documents with original API
+      if (otherDocIds.length > 0) {
+        const ret = await kbService.document_run({
+          doc_ids: otherDocIds,
+          run,
+          delete: shouldDelete,
+        });
+        const code = get(ret, 'data.code');
+        if (code !== 0) {
+          allSuccess = false;
+        }
+      }
+
+      if (allSuccess) {
+        queryClient.invalidateQueries({ queryKey: ['fetchDocumentList'] });
+        message.success(i18n.t('message.operated'));
+        return 0;
+      } else {
+        return -1;
+      }
     },
   });
 

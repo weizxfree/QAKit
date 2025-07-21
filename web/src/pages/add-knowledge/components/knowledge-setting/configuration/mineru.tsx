@@ -1,0 +1,88 @@
+import {
+  AutoKeywordsItem,
+  AutoQuestionsItem,
+} from '@/components/auto-keywords-item';
+import { DatasetConfigurationContainer } from '@/components/dataset-configuration-container';
+import Delimiter from '@/components/delimiter';
+import ExcelToHtml from '@/components/excel-to-html';
+import LayoutRecognize from '@/components/layout-recognize';
+import MaxTokenNumber from '@/components/max-token-number';
+import PageRank from '@/components/page-rank';
+import ParseConfiguration from '@/components/parse-configuration';
+import GraphRagItems from '@/components/parse-configuration/graph-rag-items';
+import { useTranslate } from '@/hooks/common-hooks';
+import { Divider, Form, Input } from 'antd';
+import { TagItems } from '../tag-item';
+import { ChunkMethodItem, EmbeddingModelItem } from './common-item';
+
+export function MinerUConfiguration() {
+  const { t } = useTranslate('knowledgeConfiguration');
+
+  return (
+    <section className="space-y-4 mb-4">
+      <DatasetConfigurationContainer>
+        <LayoutRecognize></LayoutRecognize>
+        <EmbeddingModelItem></EmbeddingModelItem>
+        <ChunkMethodItem></ChunkMethodItem>
+        <MaxTokenNumber></MaxTokenNumber>
+        <Delimiter></Delimiter>
+      </DatasetConfigurationContainer>
+
+      <Divider></Divider>
+
+      {/* KnowFlow API 配置 */}
+      <DatasetConfigurationContainer>
+        <Form.Item
+          name={['parser_config', 'knowflow_api_url']}
+          label="KnowFlow API URL"
+          tooltip="KnowFlow 服务的 API 地址，例如: http://localhost:8000"
+          rules={[
+            { required: true, message: '请输入 KnowFlow API URL' },
+            { type: 'url', message: '请输入有效的 URL 地址' },
+          ]}
+          initialValue="http://localhost:8000"
+        >
+          <Input placeholder="http://localhost:8000" />
+        </Form.Item>
+
+        <Form.Item
+          name={['parser_config', 'parse_method']}
+          label="解析方法"
+          tooltip="MinerU 解析方法，支持 auto、ocr、txt 等"
+          initialValue="auto"
+        >
+          <Input placeholder="auto" />
+        </Form.Item>
+
+        <Form.Item
+          name={['parser_config', 'language']}
+          label="文档语言"
+          tooltip="文档主要语言，支持 ch（中文）、en（英文）等"
+          initialValue="ch"
+        >
+          <Input placeholder="ch" />
+        </Form.Item>
+      </DatasetConfigurationContainer>
+
+      <Divider></Divider>
+
+      <DatasetConfigurationContainer>
+        <PageRank></PageRank>
+        <AutoKeywordsItem></AutoKeywordsItem>
+        <AutoQuestionsItem></AutoQuestionsItem>
+        <ExcelToHtml></ExcelToHtml>
+        <TagItems></TagItems>
+      </DatasetConfigurationContainer>
+
+      <Divider></Divider>
+
+      <DatasetConfigurationContainer>
+        <ParseConfiguration></ParseConfiguration>
+      </DatasetConfigurationContainer>
+
+      <Divider></Divider>
+
+      <GraphRagItems></GraphRagItems>
+    </section>
+  );
+}
