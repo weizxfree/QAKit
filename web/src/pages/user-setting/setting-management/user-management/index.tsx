@@ -1,4 +1,5 @@
 import { useTranslate } from '@/hooks/common-hooks';
+import request from '@/utils/request';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -55,48 +56,48 @@ const UserManagementPage = () => {
   });
 
   // 模拟用户数据
-  const mockUsers: UserData[] = [
-    {
-      id: '1',
-      username: 'admin',
-      email: 'admin@ragflow.io',
-      nickname: '系统管理员',
-      is_superuser: true,
-      is_active: true,
-      create_time: '2024-01-01 10:00:00',
-      update_time: '2024-01-01 10:00:00',
-    },
-    {
-      id: '2',
-      username: 'user1',
-      email: '541642069@qq.com',
-      nickname: '普通用户1',
-      is_superuser: false,
-      is_active: true,
-      create_time: '2024-01-02 10:00:00',
-      update_time: '2024-01-02 10:00:00',
-    },
-    {
-      id: '3',
-      username: 'user2',
-      email: '1124746174@qq.com',
-      nickname: '普通用户2',
-      is_superuser: false,
-      is_active: true,
-      create_time: '2024-01-03 10:00:00',
-      update_time: '2024-01-03 10:00:00',
-    },
-    {
-      id: '4',
-      username: 'testuser',
-      email: 'test@example.com',
-      nickname: '测试用户',
-      is_superuser: false,
-      is_active: false,
-      create_time: '2024-01-04 10:00:00',
-      update_time: '2024-01-04 10:00:00',
-    },
-  ];
+  // const mockUsers: UserData[] = [
+  //   {
+  //     id: '1',
+  //     username: 'admin',
+  //     email: 'admin@ragflow.io',
+  //     nickname: '系统管理员',
+  //     is_superuser: true,
+  //     is_active: true,
+  //     create_time: '2024-01-01 10:00:00',
+  //     update_time: '2024-01-01 10:00:00',
+  //   },
+  //   {
+  //     id: '2',
+  //     username: 'user1',
+  //     email: '541642069@qq.com',
+  //     nickname: '普通用户1',
+  //     is_superuser: false,
+  //     is_active: true,
+  //     create_time: '2024-01-02 10:00:00',
+  //     update_time: '2024-01-02 10:00:00',
+  //   },
+  //   {
+  //     id: '3',
+  //     username: 'user2',
+  //     email: '1124746174@qq.com',
+  //     nickname: '普通用户2',
+  //     is_superuser: false,
+  //     is_active: true,
+  //     create_time: '2024-01-03 10:00:00',
+  //     update_time: '2024-01-03 10:00:00',
+  //   },
+  //   {
+  //     id: '4',
+  //     username: 'testuser',
+  //     email: 'test@example.com',
+  //     nickname: '测试用户',
+  //     is_superuser: false,
+  //     is_active: false,
+  //     create_time: '2024-01-04 10:00:00',
+  //     update_time: '2024-01-04 10:00:00',
+  //   },
+  // ];
 
   useEffect(() => {
     loadUserData();
@@ -105,10 +106,18 @@ const UserManagementPage = () => {
   const loadUserData = async () => {
     setLoading(true);
     try {
-      // 模拟API调用
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setUserData(mockUsers);
-      setPagination((prev) => ({ ...prev, total: mockUsers.length }));
+      const values = searchForm.getFieldsValue();
+      const res = await request.get('/api/v1/users', {
+        params: {
+          currentPage: pagination.current,
+          size: pagination.pageSize,
+          username: values.username,
+          email: values.email,
+        },
+      });
+      const data = res?.data?.data || {};
+      setUserData(data.list || []);
+      setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       message.error('加载用户数据失败');
     } finally {
@@ -117,15 +126,14 @@ const UserManagementPage = () => {
   };
 
   const handleSearch = async () => {
-    const values = searchForm.getFieldsValue();
-    // 这里应该调用搜索API
-    console.log('搜索条件:', values);
-    loadUserData();
+    setPagination((prev) => ({ ...prev, current: 1 }));
+    await loadUserData();
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     searchForm.resetFields();
-    loadUserData();
+    setPagination((prev) => ({ ...prev, current: 1 }));
+    await loadUserData();
   };
 
   const handleCreateUser = () => {
@@ -141,13 +149,15 @@ const UserManagementPage = () => {
   };
 
   const handleDeleteUser = async (userId: string) => {
+    setLoading(true);
     try {
-      // 模拟API调用
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setUserData(userData.filter((user) => user.id !== userId));
+      await request.delete(`/api/v1/users/${userId}`);
       message.success('删除用户成功');
+      await loadUserData();
     } catch (error) {
       message.error('删除用户失败');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,17 +166,18 @@ const UserManagementPage = () => {
       message.warning('请选择要删除的用户');
       return;
     }
-
+    setLoading(true);
     try {
-      // 模拟API调用
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setUserData(
-        userData.filter((user) => !selectedRowKeys.includes(user.id)),
+      await Promise.all(
+        selectedRowKeys.map((id) => request.delete(`/api/v1/users/${id}`)),
       );
       setSelectedRowKeys([]);
       message.success(`成功删除 ${selectedRowKeys.length} 个用户`);
+      await loadUserData();
     } catch (error) {
       message.error('批量删除失败');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -179,42 +190,40 @@ const UserManagementPage = () => {
   const handleUserSubmit = async () => {
     try {
       const values = await userForm.validateFields();
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
+      setLoading(true);
       if (editingUser) {
-        // 更新用户
-        const updatedUsers = userData.map((user) =>
-          user.id === editingUser.id
-            ? { ...user, ...values, update_time: new Date().toLocaleString() }
-            : user,
-        );
-        setUserData(updatedUsers);
+        if (editingUser.id) {
+          await request.put(`/api/v1/users/${editingUser.id}`, {
+            data: values,
+          });
+        }
         message.success('更新用户成功');
       } else {
-        // 创建用户
-        const newUser: UserData = {
-          id: Date.now().toString(),
-          ...values,
-          create_time: new Date().toLocaleString(),
-          update_time: new Date().toLocaleString(),
-        };
-        setUserData([...userData, newUser]);
+        await request.post('/api/v1/users', values);
         message.success('创建用户成功');
       }
       setUserModalVisible(false);
+      await loadUserData();
     } catch (error) {
       message.error('操作失败');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handlePasswordSubmit = async () => {
     try {
-      await passwordForm.validateFields();
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const values = await passwordForm.validateFields();
+      setLoading(true);
+      await request.put(`/api/v1/users/${currentUserId}/reset-password`, {
+        data: { password: values.password },
+      });
       message.success('重置密码成功');
       setResetPasswordModalVisible(false);
     } catch (error) {
       message.error('重置密码失败');
+    } finally {
+      setLoading(false);
     }
   };
 

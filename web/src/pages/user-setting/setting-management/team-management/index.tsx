@@ -1,4 +1,5 @@
 import { useTranslate } from '@/hooks/common-hooks';
+import request from '@/utils/request';
 import {
   DeleteOutlined,
   PlusOutlined,
@@ -77,118 +78,6 @@ const TeamManagementPage = () => {
     total: 0,
   });
 
-  // 模拟团队数据
-  const mockTeams: TeamData[] = [
-    {
-      id: '1',
-      name: '开发团队',
-      ownerName: 'admin',
-      memberCount: 5,
-      createTime: '2024-01-01 10:00:00',
-      updateTime: '2024-01-01 10:00:00',
-    },
-    {
-      id: '2',
-      name: '测试团队',
-      ownerName: 'user1',
-      memberCount: 3,
-      createTime: '2024-01-02 10:00:00',
-      updateTime: '2024-01-02 10:00:00',
-    },
-    {
-      id: '3',
-      name: '产品团队',
-      ownerName: 'user2',
-      memberCount: 2,
-      createTime: '2024-01-03 10:00:00',
-      updateTime: '2024-01-03 10:00:00',
-    },
-  ];
-
-  // 模拟成员数据
-  const mockMembers: { [key: string]: TeamMember[] } = {
-    '1': [
-      {
-        userId: '1',
-        username: 'admin',
-        role: 'owner',
-        joinTime: '2024-01-01 10:00:00',
-      },
-      {
-        userId: '2',
-        username: 'user1',
-        role: 'normal',
-        joinTime: '2024-01-02 10:00:00',
-      },
-      {
-        userId: '3',
-        username: 'user2',
-        role: 'normal',
-        joinTime: '2024-01-03 10:00:00',
-      },
-      {
-        userId: '4',
-        username: 'dev1',
-        role: 'normal',
-        joinTime: '2024-01-04 10:00:00',
-      },
-      {
-        userId: '5',
-        username: 'dev2',
-        role: 'normal',
-        joinTime: '2024-01-05 10:00:00',
-      },
-    ],
-    '2': [
-      {
-        userId: '2',
-        username: 'user1',
-        role: 'owner',
-        joinTime: '2024-01-02 10:00:00',
-      },
-      {
-        userId: '6',
-        username: 'test1',
-        role: 'normal',
-        joinTime: '2024-01-06 10:00:00',
-      },
-      {
-        userId: '7',
-        username: 'test2',
-        role: 'normal',
-        joinTime: '2024-01-07 10:00:00',
-      },
-    ],
-    '3': [
-      {
-        userId: '3',
-        username: 'user2',
-        role: 'owner',
-        joinTime: '2024-01-03 10:00:00',
-      },
-      {
-        userId: '8',
-        username: 'pm1',
-        role: 'normal',
-        joinTime: '2024-01-08 10:00:00',
-      },
-    ],
-  };
-
-  // 模拟用户数据
-  const mockUsers: UserData[] = [
-    { id: '1', username: 'admin' },
-    { id: '2', username: 'user1' },
-    { id: '3', username: 'user2' },
-    { id: '4', username: 'dev1' },
-    { id: '5', username: 'dev2' },
-    { id: '6', username: 'test1' },
-    { id: '7', username: 'test2' },
-    { id: '8', username: 'pm1' },
-    { id: '9', username: 'newuser1' },
-    { id: '10', username: 'newuser2' },
-  ];
-
   useEffect(() => {
     loadTeamData();
     loadUserList();
@@ -197,9 +86,18 @@ const TeamManagementPage = () => {
   const loadTeamData = async () => {
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setTeamData(mockTeams);
-      setPagination((prev) => ({ ...prev, total: mockTeams.length }));
+      const values = searchForm.getFieldsValue();
+      const res = await request.get('/api/v1/teams', {
+        params: {
+          currentPage: pagination.current,
+          size: pagination.pageSize,
+          name: values.name,
+          ownerName: values.ownerName,
+        },
+      });
+      const data = res?.data?.data || {};
+      setTeamData(data.list || []);
+      setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       message.error('加载团队数据失败');
     } finally {
@@ -210,8 +108,18 @@ const TeamManagementPage = () => {
   const loadUserList = async () => {
     setUserLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      setUserList(mockUsers);
+      const res = await request.get('/api/v1/users', {
+        params: {
+          currentPage: 1,
+          size: 1000, // Get all users for selection
+        },
+      });
+      const data = res?.data?.data || {};
+      const users = (data.list || []).map((user: any) => ({
+        id: user.id,
+        username: user.username,
+      }));
+      setUserList(users);
     } catch (error) {
       message.error('加载用户列表失败');
     } finally {
@@ -222,12 +130,14 @@ const TeamManagementPage = () => {
   const loadTeamMembers = async (teamId: string) => {
     setMemberLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      const members = mockMembers[teamId] || [];
-      setTeamMembers(members);
+      const res = await request.get(`/api/v1/teams/${teamId}/members`);
+      const data = res?.data?.data || [];
+      setTeamMembers(data);
 
       // 更新可添加的用户列表
-      const memberUserIds = new Set(members.map((member) => member.userId));
+      const memberUserIds = new Set(
+        data.map((member: TeamMember) => member.userId),
+      );
       const available = userList.filter((user) => !memberUserIds.has(user.id));
       setAvailableUsers(available);
     } catch (error) {
@@ -265,70 +175,50 @@ const TeamManagementPage = () => {
   const handleAddMemberSubmit = async () => {
     try {
       const values = await addMemberForm.validateFields();
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // 更新模拟数据
-      const selectedUserData = userList.find((u) => u.id === values.userId);
-      if (selectedUserData && currentTeam) {
-        const newMember: TeamMember = {
-          userId: values.userId,
-          username: selectedUserData.username,
-          role: values.role,
-          joinTime: new Date().toLocaleString(),
-        };
-
-        if (!mockMembers[currentTeam.id]) {
-          mockMembers[currentTeam.id] = [];
-        }
-        mockMembers[currentTeam.id].push(newMember);
-
-        // 更新团队成员数量
-        const updatedTeams = teamData.map((team) =>
-          team.id === currentTeam.id
-            ? { ...team, memberCount: team.memberCount + 1 }
-            : team,
-        );
-        setTeamData(updatedTeams);
-
+      setMemberLoading(true);
+      if (currentTeam) {
+        await request.post(`/api/v1/teams/${currentTeam.id}/members`, values);
         message.success('添加成员成功');
         setAddMemberModalVisible(false);
-        loadTeamMembers(currentTeam.id);
+        await loadTeamMembers(currentTeam.id);
+        await loadTeamData(); // Refresh team list to update member counts
       }
     } catch (error) {
       message.error('添加成员失败');
+    } finally {
+      setMemberLoading(false);
     }
   };
 
   const handleRemoveMember = async (member: TeamMember) => {
     if (!currentTeam) return;
 
+    setMemberLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // 更新模拟数据
-      if (mockMembers[currentTeam.id]) {
-        mockMembers[currentTeam.id] = mockMembers[currentTeam.id].filter(
-          (m) => m.userId !== member.userId,
-        );
-
-        // 更新团队成员数量
-        const updatedTeams = teamData.map((team) =>
-          team.id === currentTeam.id
-            ? { ...team, memberCount: team.memberCount - 1 }
-            : team,
-        );
-        setTeamData(updatedTeams);
-
-        message.success('移除成员成功');
-        loadTeamMembers(currentTeam.id);
-      }
+      await request.delete(
+        `/api/v1/teams/${currentTeam.id}/members/${member.userId}`,
+      );
+      message.success('移除成员成功');
+      await loadTeamMembers(currentTeam.id);
+      await loadTeamData(); // Refresh team list to update member counts
     } catch (error) {
       message.error('移除成员失败');
+    } finally {
+      setMemberLoading(false);
     }
   };
 
-  const handleDeleteTeam = () => {
-    message.info('如需解散该团队，可直接删除负责人账号');
+  const handleDeleteTeam = async (teamId: string) => {
+    setLoading(true);
+    try {
+      await request.delete(`/api/v1/teams/${teamId}`);
+      message.success('删除团队成功');
+      await loadTeamData();
+    } catch (error) {
+      message.error('删除团队失败');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const columns = [
@@ -380,15 +270,16 @@ const TeamManagementPage = () => {
           >
             成员管理
           </Button>
-          <Button
-            type="link"
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={handleDeleteTeam}
+          <Popconfirm
+            title="确定删除这个团队吗？"
+            onConfirm={() => handleDeleteTeam(record.id)}
+            okText="确定"
+            cancelText="取消"
           >
-            删除
-          </Button>
+            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },

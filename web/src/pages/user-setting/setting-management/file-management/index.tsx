@@ -1,4 +1,5 @@
 import { useTranslate } from '@/hooks/common-hooks';
+import request from '@/utils/request';
 import {
   DeleteOutlined,
   DownloadOutlined,
@@ -56,50 +57,6 @@ const FileManagementPage = () => {
     total: 0,
   });
 
-  // 模拟文件数据
-  const mockFiles: FileData[] = [
-    {
-      id: '1',
-      name: 'document.pdf',
-      size: 2048576,
-      type: 'application/pdf',
-      create_time: '2024-01-01 10:00:00',
-      status: 'success',
-    },
-    {
-      id: '2',
-      name: 'presentation.pptx',
-      size: 5242880,
-      type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      create_time: '2024-01-02 10:00:00',
-      status: 'success',
-    },
-    {
-      id: '3',
-      name: 'spreadsheet.xlsx',
-      size: 1024000,
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      create_time: '2024-01-03 10:00:00',
-      status: 'success',
-    },
-    {
-      id: '4',
-      name: 'image.jpg',
-      size: 512000,
-      type: 'image/jpeg',
-      create_time: '2024-01-04 10:00:00',
-      status: 'success',
-    },
-    {
-      id: '5',
-      name: 'textfile.txt',
-      size: 10240,
-      type: 'text/plain',
-      create_time: '2024-01-05 10:00:00',
-      status: 'success',
-    },
-  ];
-
   useEffect(() => {
     loadFileData();
   }, [pagination.current, pagination.pageSize, searchValue]);
@@ -107,17 +64,16 @@ const FileManagementPage = () => {
   const loadFileData = async () => {
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      let filteredFiles = mockFiles;
-      if (searchValue) {
-        filteredFiles = mockFiles.filter((file) =>
-          file.name.toLowerCase().includes(searchValue.toLowerCase()),
-        );
-      }
-
-      setFileData(filteredFiles);
-      setPagination((prev) => ({ ...prev, total: filteredFiles.length }));
+      const res = await request.get('/api/v1/files', {
+        params: {
+          currentPage: pagination.current,
+          size: pagination.pageSize,
+          name: searchValue,
+        },
+      });
+      const data = res?.data?.data || {};
+      setFileData(data.list || []);
+      setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       message.error('加载文件列表失败');
     } finally {
@@ -149,13 +105,23 @@ const FileManagementPage = () => {
 
     setUploadLoading(true);
     try {
-      // 模拟上传过程
-      for (let i = 0; i < uploadFileList.length; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+      // Upload files one by one
+      const formData = new FormData();
+      uploadFileList.forEach((file) => {
+        if (file.originFileObj) {
+          formData.append('files', file.originFileObj);
+        }
+      });
+
+      await request.post('/api/v1/files/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       message.success(`成功上传 ${uploadFileList.length} 个文件`);
       setUploadModalVisible(false);
+      setUploadFileList([]);
       loadFileData();
     } catch (error) {
       message.error('文件上传失败');
@@ -166,24 +132,14 @@ const FileManagementPage = () => {
 
   const handleDownload = async (file: FileData) => {
     try {
-      // 模拟下载
       message.loading({ content: '正在准备下载...', key: 'download' });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // 创建模拟下载
-      const url = URL.createObjectURL(
-        new Blob(['Mock file content'], { type: file.type }),
-      );
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = file.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      // Use window.open to trigger download from API
+      const downloadUrl = `/api/v1/files/${file.id}/download`;
+      window.open(downloadUrl, '_blank');
 
       message.success({
-        content: `文件 "${file.name}" 下载成功`,
+        content: `开始下载文件 "${file.name}"`,
         key: 'download',
       });
     } catch (error) {
@@ -192,12 +148,15 @@ const FileManagementPage = () => {
   };
 
   const handleDeleteFile = async (fileId: string) => {
+    setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setFileData(fileData.filter((file) => file.id !== fileId));
+      await request.delete(`/api/v1/files/${fileId}`);
       message.success('删除成功');
+      await loadFileData();
     } catch (error) {
       message.error('删除失败');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -207,15 +166,18 @@ const FileManagementPage = () => {
       return;
     }
 
+    setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setFileData(
-        fileData.filter((file) => !selectedRowKeys.includes(file.id)),
-      );
+      await request.delete('/api/v1/files/batch', {
+        data: { fileIds: selectedRowKeys },
+      });
       setSelectedRowKeys([]);
       message.success(`成功删除 ${selectedRowKeys.length} 个文件`);
+      await loadFileData();
     } catch (error) {
       message.error('批量删除失败');
+    } finally {
+      setLoading(false);
     }
   };
 

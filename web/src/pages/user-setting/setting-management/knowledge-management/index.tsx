@@ -1,4 +1,5 @@
 import { useTranslate } from '@/hooks/common-hooks';
+import request from '@/utils/request';
 import {
   DatabaseOutlined,
   DeleteOutlined,
@@ -90,111 +91,6 @@ const KnowledgeManagementPage = () => {
     total: 0,
   });
 
-  // 模拟知识库数据
-  const mockKnowledgeBases: KnowledgeBaseData[] = [
-    {
-      id: '1',
-      name: 'AI技术文档',
-      description: '人工智能相关技术文档和资料',
-      doc_num: 25,
-      language: 'Chinese',
-      permission: 'me',
-      chunk_num: 1250,
-      token_num: 125000,
-      create_time: '2024-01-01 10:00:00',
-      create_date: '2024-01-01 10:00:00',
-    },
-    {
-      id: '2',
-      name: '产品需求文档',
-      description: '产品设计和需求分析文档',
-      doc_num: 18,
-      language: 'Chinese',
-      permission: 'team',
-      chunk_num: 890,
-      token_num: 89000,
-      create_time: '2024-01-02 10:00:00',
-      create_date: '2024-01-02 10:00:00',
-    },
-    {
-      id: '3',
-      name: 'English Papers',
-      description: 'Research papers in English',
-      doc_num: 42,
-      language: 'English',
-      permission: 'me',
-      chunk_num: 2100,
-      token_num: 210000,
-      create_time: '2024-01-03 10:00:00',
-      create_date: '2024-01-03 10:00:00',
-    },
-  ];
-
-  // 模拟文档数据
-  const mockDocuments: { [key: string]: DocumentData[] } = {
-    '1': [
-      {
-        id: '1',
-        name: '深度学习基础.pdf',
-        chunk_num: 85,
-        progress: 1,
-        status: '3',
-        create_date: '2024-01-01 10:00:00',
-      },
-      {
-        id: '2',
-        name: '机器学习算法.docx',
-        chunk_num: 62,
-        progress: 1,
-        status: '3',
-        create_date: '2024-01-02 10:00:00',
-      },
-      {
-        id: '3',
-        name: '神经网络架构.pdf',
-        chunk_num: 0,
-        progress: 0,
-        status: '0',
-        create_date: '2024-01-03 10:00:00',
-      },
-    ],
-    '2': [
-      {
-        id: '4',
-        name: '产品规划文档.docx',
-        chunk_num: 45,
-        progress: 1,
-        status: '3',
-        create_date: '2024-01-02 10:00:00',
-      },
-      {
-        id: '5',
-        name: '用户研究报告.pdf',
-        chunk_num: 38,
-        progress: 0.6,
-        status: '1',
-        create_date: '2024-01-04 10:00:00',
-      },
-    ],
-    '3': [
-      {
-        id: '6',
-        name: 'Computer Vision Survey.pdf',
-        chunk_num: 120,
-        progress: 1,
-        status: '3',
-        create_date: '2024-01-03 10:00:00',
-      },
-    ],
-  };
-
-  // 模拟用户数据
-  const mockUsers: UserData[] = [
-    { id: '1', username: 'admin' },
-    { id: '2', username: 'user1' },
-    { id: '3', username: 'user2' },
-  ];
-
   useEffect(() => {
     loadKnowledgeData();
     loadUserList();
@@ -203,17 +99,16 @@ const KnowledgeManagementPage = () => {
   const loadKnowledgeData = async () => {
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      let filteredData = mockKnowledgeBases;
-      if (searchValue) {
-        filteredData = mockKnowledgeBases.filter((kb) =>
-          kb.name.toLowerCase().includes(searchValue.toLowerCase()),
-        );
-      }
-
-      setKnowledgeData(filteredData);
-      setPagination((prev) => ({ ...prev, total: filteredData.length }));
+      const res = await request.get('/api/v1/knowledgebases', {
+        params: {
+          currentPage: pagination.current,
+          size: pagination.pageSize,
+          name: searchValue,
+        },
+      });
+      const data = res?.data?.data || {};
+      setKnowledgeData(data.list || []);
+      setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       message.error('加载知识库数据失败');
     } finally {
@@ -223,8 +118,18 @@ const KnowledgeManagementPage = () => {
 
   const loadUserList = async () => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      setUserList(mockUsers);
+      const res = await request.get('/api/v1/users', {
+        params: {
+          currentPage: 1,
+          size: 1000,
+        },
+      });
+      const data = res?.data?.data || {};
+      const users = (data.list || []).map((user: any) => ({
+        id: user.id,
+        username: user.username,
+      }));
+      setUserList(users);
     } catch (error) {
       message.error('加载用户列表失败');
     }
@@ -233,10 +138,18 @@ const KnowledgeManagementPage = () => {
   const loadDocumentList = async (kbId: string) => {
     setDocumentLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const documents = mockDocuments[kbId] || [];
-      setDocumentList(documents);
-      setDocPagination((prev) => ({ ...prev, total: documents.length }));
+      const res = await request.get(
+        `/api/v1/knowledgebases/${kbId}/documents`,
+        {
+          params: {
+            currentPage: docPagination.current,
+            size: docPagination.pageSize,
+          },
+        },
+      );
+      const data = res?.data?.data || {};
+      setDocumentList(data.list || []);
+      setDocPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       message.error('加载文档列表失败');
     } finally {
@@ -263,24 +176,15 @@ const KnowledgeManagementPage = () => {
   const handleCreateSubmit = async () => {
     try {
       const values = await createForm.validateFields();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const newKB: KnowledgeBaseData = {
-        id: Date.now().toString(),
-        ...values,
-        doc_num: 0,
-        chunk_num: 0,
-        token_num: 0,
-        create_time: new Date().toLocaleString(),
-        create_date: new Date().toLocaleString(),
-      };
-
-      mockKnowledgeBases.push(newKB);
+      setLoading(true);
+      await request.post('/api/v1/knowledgebases', values);
       message.success('知识库创建成功');
       setCreateModalVisible(false);
       loadKnowledgeData();
     } catch (error) {
       message.error('创建知识库失败');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -291,16 +195,15 @@ const KnowledgeManagementPage = () => {
   };
 
   const handleDelete = async (kbId: string) => {
+    setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const index = mockKnowledgeBases.findIndex((kb) => kb.id === kbId);
-      if (index !== -1) {
-        mockKnowledgeBases.splice(index, 1);
-      }
+      await request.delete(`/api/v1/knowledgebases/${kbId}`);
       message.success('删除成功');
       loadKnowledgeData();
     } catch (error) {
       message.error('删除失败');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -310,19 +213,18 @@ const KnowledgeManagementPage = () => {
       return;
     }
 
+    setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      selectedRowKeys.forEach((id) => {
-        const index = mockKnowledgeBases.findIndex((kb) => kb.id === id);
-        if (index !== -1) {
-          mockKnowledgeBases.splice(index, 1);
-        }
+      await request.delete('/api/v1/knowledgebases/batch', {
+        data: { kbIds: selectedRowKeys },
       });
       setSelectedRowKeys([]);
       message.success(`成功删除 ${selectedRowKeys.length} 个知识库`);
       loadKnowledgeData();
     } catch (error) {
       message.error('批量删除失败');
+    } finally {
+      setLoading(false);
     }
   };
 

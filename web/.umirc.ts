@@ -35,16 +35,16 @@ export default defineConfig({
     { from: 'src/conf.json', to: 'dist/conf.json' },
     { from: 'node_modules/monaco-editor/min/vs/', to: 'dist/vs/' },
   ],
-  proxy: [
-    {
-      context: ['/api', '/v1'],
-      target: 'http://127.0.0.1:9380/',  // 你不用管这个呀，http://154.219.102.235/
+  proxy: {
+    '/api/v1': {
+      target: 'http://127.0.0.1:5000',
       changeOrigin: true,
-      ws: true,
-      logger: console,
-      // pathRewrite: { '^/v1': '/v1' },
     },
-  ],
+    '/v1': {
+      target: 'http://127.0.0.1:9380',
+      changeOrigin: true,
+    },
+  },
 
   chainWebpack(memo, args) {
     memo.module.rule('markdown').test(/\.md$/).type('asset/source');

@@ -1,4 +1,5 @@
 import { useTranslate } from '@/hooks/common-hooks';
+import request from '@/utils/request';
 import {
   ApiOutlined,
   DeleteOutlined,
@@ -52,38 +53,6 @@ const UserConfigPage = () => {
     total: 0,
   });
 
-  // 模拟用户配置数据
-  const mockConfigs: UserConfigData[] = [
-    {
-      id: '1',
-      username: 'admin',
-      chatModel: 'gpt-4o',
-      embeddingModel: 'text-embedding-3-large',
-      updateTime: '2024-01-01 10:00:00',
-    },
-    {
-      id: '2',
-      username: 'user1',
-      chatModel: 'gpt-3.5-turbo',
-      embeddingModel: 'text-embedding-3-small',
-      updateTime: '2024-01-02 10:00:00',
-    },
-    {
-      id: '3',
-      username: 'user2',
-      chatModel: 'claude-3-sonnet',
-      embeddingModel: 'text-embedding-ada-002',
-      updateTime: '2024-01-03 10:00:00',
-    },
-    {
-      id: '4',
-      username: 'testuser',
-      chatModel: 'gemini-pro',
-      embeddingModel: 'sentence-transformers',
-      updateTime: '2024-01-04 10:00:00',
-    },
-  ];
-
   // 模拟可用的模型选项
   const chatModelOptions = [
     'gpt-4o',
@@ -112,17 +81,16 @@ const UserConfigPage = () => {
   const loadConfigData = async () => {
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      let filteredData = mockConfigs;
-      if (searchValue) {
-        filteredData = mockConfigs.filter((config) =>
-          config.username.toLowerCase().includes(searchValue.toLowerCase()),
-        );
-      }
-
-      setConfigData(filteredData);
-      setPagination((prev) => ({ ...prev, total: filteredData.length }));
+      const res = await request.get('/api/v1/tenants', {
+        params: {
+          currentPage: pagination.current,
+          size: pagination.pageSize,
+          username: searchValue,
+        },
+      });
+      const data = res?.data?.data || {};
+      setConfigData(data.list || []);
+      setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       message.error('加载用户配置数据失败');
     } finally {
@@ -154,25 +122,19 @@ const UserConfigPage = () => {
   const handleEditSubmit = async () => {
     try {
       const values = await editForm.validateFields();
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // 更新模拟数据
-      const updatedConfigs = configData.map((config) =>
-        config.id === currentConfig?.id
-          ? {
-              ...config,
-              chatModel: values.chatModel,
-              embeddingModel: values.embeddingModel,
-              updateTime: new Date().toLocaleString(),
-            }
-          : config,
-      );
-      setConfigData(updatedConfigs);
-
-      message.success('修改配置成功');
-      setEditModalVisible(false);
+      setLoading(true);
+      if (currentConfig) {
+        await request.put(`/api/v1/tenants/${currentConfig.id}`, {
+          data: values,
+        });
+        message.success('修改配置成功');
+        setEditModalVisible(false);
+        loadConfigData();
+      }
     } catch (error) {
       message.error('修改配置失败');
+    } finally {
+      setLoading(false);
     }
   };
 
