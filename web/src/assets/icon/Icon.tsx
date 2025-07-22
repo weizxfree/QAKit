@@ -279,6 +279,42 @@ export const CommaIcon = (props: Partial<IconComponentProps>) => (
   <Icon component={CommaSvg} {...props} />
 );
 
+const ManagementSvg = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"
+      stroke={currentColor}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8 21L9.5 16.5L14 18L9.5 19.5L8 21Z"
+      stroke={currentColor}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16 5L17 7L19 8L17 9L16 11L15 9L13 8L15 7L16 5Z"
+      stroke={currentColor}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const ManagementIcon = (props: Partial<IconComponentProps>) => (
+  <Icon component={ManagementSvg} {...props} />
+);
+
 export function SideDown({ className }: { className?: string }) {
   return (
     <ChevronDown

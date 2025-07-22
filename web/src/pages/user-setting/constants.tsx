@@ -1,6 +1,7 @@
 import {
   ApiIcon,
   LogOutIcon,
+  ManagementIcon,
   ModelProviderIcon,
   PasswordIcon,
   ProfileIcon,
@@ -8,16 +9,24 @@ import {
 } from '@/assets/icon/Icon';
 import { LLMFactory } from '@/constants/llm';
 import { UserSettingRouteKey } from '@/constants/setting';
-import { MonitorOutlined } from '@ant-design/icons';
+import {
+  DatabaseOutlined,
+  FileOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 
 export const UserSettingIconMap = {
   [UserSettingRouteKey.Profile]: <ProfileIcon />,
   [UserSettingRouteKey.Password]: <PasswordIcon />,
   [UserSettingRouteKey.Model]: <ModelProviderIcon />,
-  [UserSettingRouteKey.System]: <MonitorOutlined style={{ fontSize: 24 }} />,
-  [UserSettingRouteKey.Team]: <TeamIcon />,
-  [UserSettingRouteKey.Logout]: <LogOutIcon />,
+  [UserSettingRouteKey.System]: <ModelProviderIcon />,
   [UserSettingRouteKey.Api]: <ApiIcon />,
+  [UserSettingRouteKey.Team]: <TeamIcon />,
+  [UserSettingRouteKey.Management]: <ManagementIcon />,
+  [UserSettingRouteKey.FileManagement]: <FileOutlined />,
+  [UserSettingRouteKey.KnowledgeManagement]: <DatabaseOutlined />,
+  [UserSettingRouteKey.UserConfig]: <SettingOutlined />,
+  [UserSettingRouteKey.Logout]: <LogOutIcon />,
 };
 
 export * from '@/constants/setting';

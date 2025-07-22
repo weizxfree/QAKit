@@ -119,6 +119,41 @@ const routes = [
             path: '/user-setting/api',
             component: '@/pages/user-setting/setting-api',
           },
+          {
+            path: '/user-setting/management',
+            component: '@/pages/user-setting/setting-management',
+            routes: [
+              {
+                path: '/user-setting/management',
+                redirect: '/user-setting/management/user-management',
+              },
+              {
+                path: '/user-setting/management/user-management',
+                component:
+                  '@/pages/user-setting/setting-management/user-management',
+              },
+              {
+                path: '/user-setting/management/team-management',
+                component:
+                  '@/pages/user-setting/setting-management/team-management',
+              },
+              {
+                path: '/user-setting/management/file-management',
+                component:
+                  '@/pages/user-setting/setting-management/file-management',
+              },
+              {
+                path: '/user-setting/management/knowledge-management',
+                component:
+                  '@/pages/user-setting/setting-management/knowledge-management',
+              },
+              {
+                path: '/user-setting/management/user-config',
+                component:
+                  '@/pages/user-setting/setting-management/user-config',
+              },
+            ],
+          },
         ],
       },
       {

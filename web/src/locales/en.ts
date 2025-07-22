@@ -553,6 +553,13 @@ This auto-tag feature enhances retrieval by adding another layer of domain-speci
       modelDescription: 'Set the model parameter and API KEY here.',
       team: 'Team',
       system: 'System',
+      management: 'Management',
+      managementDescription:
+        'System management features, visible only to super administrators.',
+      userManagement: 'User Management',
+      teamManagement: 'Team Management',
+      knowledgeManagement: 'Knowledge Management',
+      userConfig: 'User Config',
       logout: 'Log out',
       api: 'API',
       username: 'Username',
