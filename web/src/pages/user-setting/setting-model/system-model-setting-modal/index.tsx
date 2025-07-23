@@ -51,6 +51,8 @@ const SystemModelSettingModal = ({
       onCancel={hideModal}
       okButtonProps={{ loading }}
       confirmLoading={loading}
+      width={680}
+      style={{ minWidth: '600px' }}
     >
       <Form form={form} onValuesChange={onFormLayoutChange} layout={'vertical'}>
         <Form.Item
@@ -64,6 +66,9 @@ const SystemModelSettingModal = ({
               ...allOptions[LlmModelType.Image2text],
             ]}
             allowClear
+            showSearch
+            optionFilterProp="label"
+            placeholder={t('pleaseSelect')}
           />
         </Form.Item>
         <Form.Item
@@ -71,14 +76,26 @@ const SystemModelSettingModal = ({
           name="embd_id"
           tooltip={t('embeddingModelTip')}
         >
-          <Select options={allOptions[LlmModelType.Embedding]} allowClear />
+          <Select
+            options={allOptions[LlmModelType.Embedding]}
+            allowClear
+            showSearch
+            optionFilterProp="label"
+            placeholder={t('pleaseSelect')}
+          />
         </Form.Item>
         <Form.Item
           label={t('img2txtModel')}
           name="img2txt_id"
           tooltip={t('img2txtModelTip')}
         >
-          <Select options={allOptions[LlmModelType.Image2text]} allowClear />
+          <Select
+            options={allOptions[LlmModelType.Image2text]}
+            allowClear
+            showSearch
+            optionFilterProp="label"
+            placeholder={t('pleaseSelect')}
+          />
         </Form.Item>
 
         <Form.Item
@@ -86,21 +103,39 @@ const SystemModelSettingModal = ({
           name="asr_id"
           tooltip={t('sequence2txtModelTip')}
         >
-          <Select options={allOptions[LlmModelType.Speech2text]} allowClear />
+          <Select
+            options={allOptions[LlmModelType.Speech2text]}
+            allowClear
+            showSearch
+            optionFilterProp="label"
+            placeholder={t('pleaseSelect')}
+          />
         </Form.Item>
         <Form.Item
           label={t('rerankModel')}
           name="rerank_id"
           tooltip={t('rerankModelTip')}
         >
-          <Select options={allOptions[LlmModelType.Rerank]} allowClear />
+          <Select
+            options={allOptions[LlmModelType.Rerank]}
+            allowClear
+            showSearch
+            optionFilterProp="label"
+            placeholder={t('pleaseSelect')}
+          />
         </Form.Item>
         <Form.Item
           label={t('ttsModel')}
           name="tts_id"
           tooltip={t('ttsModelTip')}
         >
-          <Select options={allOptions[LlmModelType.TTS]} allowClear />
+          <Select
+            options={allOptions[LlmModelType.TTS]}
+            allowClear
+            showSearch
+            optionFilterProp="label"
+            placeholder={t('pleaseSelect')}
+          />
         </Form.Item>
       </Form>
     </Modal>
