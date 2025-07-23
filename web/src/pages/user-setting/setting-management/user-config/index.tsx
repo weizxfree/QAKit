@@ -186,9 +186,29 @@ const UserConfigPage = () => {
       title: '聊天模型',
       dataIndex: 'chatModel',
       key: 'chatModel',
+      width: 180,
+      ellipsis: {
+        showTitle: false,
+      },
       render: (model: string) => (
-        <Tag color={getModelColor(model)} icon={<RobotOutlined />}>
-          {getModelDisplayName(model)}
+        <Tag
+          color={getModelColor(model)}
+          icon={<RobotOutlined />}
+          style={{ maxWidth: '160px' }}
+        >
+          <span
+            title={getModelDisplayName(model)}
+            style={{
+              display: 'inline-block',
+              maxWidth: '120px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              verticalAlign: 'top',
+            }}
+          >
+            {getModelDisplayName(model)}
+          </span>
         </Tag>
       ),
     },
@@ -196,9 +216,29 @@ const UserConfigPage = () => {
       title: '嵌入模型',
       dataIndex: 'embeddingModel',
       key: 'embeddingModel',
+      width: 180,
+      ellipsis: {
+        showTitle: false,
+      },
       render: (model: string) => (
-        <Tag color={getModelColor(model)} icon={<ApiOutlined />}>
-          {getModelDisplayName(model)}
+        <Tag
+          color={getModelColor(model)}
+          icon={<ApiOutlined />}
+          style={{ maxWidth: '160px' }}
+        >
+          <span
+            title={getModelDisplayName(model)}
+            style={{
+              display: 'inline-block',
+              maxWidth: '120px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              verticalAlign: 'top',
+            }}
+          >
+            {getModelDisplayName(model)}
+          </span>
         </Tag>
       ),
     },
@@ -280,7 +320,7 @@ const UserConfigPage = () => {
           rowKey="id"
           loading={loading}
           pagination={false}
-          scroll={{ x: 900 }}
+          scroll={{ x: 1000 }}
           rowSelection={{
             selectedRowKeys,
             onChange: (selectedRowKeys: React.Key[]) =>
