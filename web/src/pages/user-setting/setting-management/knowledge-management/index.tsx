@@ -27,6 +27,7 @@ import {
   Space,
   Table,
   Tag,
+  Tooltip,
   message,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -48,6 +49,11 @@ interface KnowledgeBaseData {
   create_date: string;
 }
 
+interface LogItem {
+  time: string;
+  message: string;
+}
+
 interface DocumentData {
   id: string;
   name: string;
@@ -55,11 +61,19 @@ interface DocumentData {
   progress: number;
   status: string;
   create_date: string;
+  logs?: LogItem[]; // 日志字段，带时间戳
 }
 
 interface UserData {
   id: string;
   username: string;
+}
+
+interface FileData {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
 }
 
 const KnowledgeManagementPage = () => {
@@ -90,6 +104,35 @@ const KnowledgeManagementPage = () => {
     pageSize: 10,
     total: 0,
   });
+
+  // 1. 添加文档弹窗相关状态
+  const [addDocModalVisible, setAddDocModalVisible] = useState(false);
+  const [fileList, setFileList] = useState<FileData[]>([]);
+  const [filePagination, setFilePagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [selectedFileRowKeys, setSelectedFileRowKeys] = useState<string[]>([]);
+  const [fileLoading, setFileLoading] = useState(false);
+
+  // 解析和分块规则相关状态
+  const [parseLoading, setParseLoading] = useState(false);
+  const [chunkModalVisible, setChunkModalVisible] = useState(false);
+  const [chunkDocId, setChunkDocId] = useState<string | null>(null);
+  const [chunkDocName, setChunkDocName] = useState<string | null>(null);
+  const [chunkConfig, setChunkConfig] = useState<any>({
+    strategy: 'smart',
+    chunk_token_num: 256,
+    min_chunk_tokens: 10,
+    regex_pattern: '',
+  });
+  const [chunkConfigLoading, setChunkConfigLoading] = useState(false);
+  const [chunkConfigSaving, setChunkConfigSaving] = useState(false);
+
+  // 解析进度弹窗相关状态
+  // const [parseProgressModalVisible, setParseProgressModalVisible] = useState(false);
+  // const [parseDocId, setParseDocId] = useState<string | null>(null);
 
   useEffect(() => {
     loadKnowledgeData();
@@ -177,7 +220,9 @@ const KnowledgeManagementPage = () => {
     try {
       const values = await createForm.validateFields();
       setLoading(true);
-      await request.post('/api/v1/knowledgebases', values);
+      await request.post('/api/v1/knowledgebases', {
+        data: values,
+      });
       message.success('知识库创建成功');
       setCreateModalVisible(false);
       loadKnowledgeData();
@@ -243,31 +288,171 @@ const KnowledgeManagementPage = () => {
     }
   };
 
+  // 解析文档
   const handleParseDocument = async (doc: DocumentData) => {
     if (doc.progress === 1) {
       message.warning('文档已完成解析，无需再重复解析');
       return;
     }
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      // 更新文档解析状态
-      const updatedDoc = {
-        ...doc,
-        progress: 1,
-        status: '3',
-        chunk_num: Math.floor(Math.random() * 100) + 20,
-      };
-      const docIndex = documentList.findIndex((d) => d.id === doc.id);
-      if (docIndex !== -1) {
-        const newDocList = [...documentList];
-        newDocList[docIndex] = updatedDoc;
-        setDocumentList(newDocList);
-      }
-      message.success('解析任务已完成');
+      await request.post(`/api/v1/knowledgebases/documents/${doc.id}/parse`);
+      // 直接开始轮询进度和日志，带时间戳
+      pollParseProgressWithTimestamp(doc.id);
+      message.success('解析任务已提交，进度和日志将在状态标签悬浮显示');
     } catch (error) {
-      message.error('解析任务失败');
+      message.error('解析任务提交失败');
     }
+  };
+
+  // 轮询解析进度（带时间戳日志）
+  const pollParseProgressWithTimestamp = async (
+    docId: string,
+    interval = 2000,
+    maxTries = 60,
+  ) => {
+    let tries = 0;
+    let finished = false;
+    let lastMessage = '';
+    while (!finished && tries < maxTries) {
+      try {
+        const res = await request.get(
+          `/api/v1/knowledgebases/documents/${docId}/parse/progress`,
+        );
+        const response = res?.data;
+        if (response?.code === 202) {
+          // 解析进行中
+          tries++;
+          await new Promise((resolve) => setTimeout(resolve, interval));
+          continue;
+        }
+        if (response?.code === 0) {
+          const data = response.data || {};
+          setDocumentList((prev) =>
+            prev.map((item) => {
+              if (item.id === docId) {
+                let logs: LogItem[] = item.logs ?? [];
+                if (data.message && data.message !== lastMessage) {
+                  lastMessage = data.message;
+                  const now = new Date();
+                  const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                  logs = [
+                    { time: timeStr, message: data.message },
+                    ...logs.slice(0, 19),
+                  ];
+                }
+                return {
+                  ...item,
+                  progress: data.progress ?? item.progress,
+                  logs,
+                };
+              }
+              return item;
+            }),
+          );
+          if (data.running === '3' || data.progress === 1) {
+            finished = true;
+            if (currentKnowledgeBase) loadDocumentList(currentKnowledgeBase.id);
+            break;
+          }
+          if (data.status === '3') {
+            finished = true;
+            break;
+          }
+        }
+      } catch (e) {
+        // 忽略错误，继续轮询
+      }
+      tries++;
+      await new Promise((resolve) => setTimeout(resolve, interval));
+    }
+  };
+
+  // 分块规则弹窗
+  const openChunkModal = (doc: DocumentData) => {
+    setChunkDocId(doc.id);
+    setChunkDocName(doc.name);
+    setChunkModalVisible(true);
+    loadChunkConfig(doc.id);
+  };
+  const loadChunkConfig = async (docId: string) => {
+    setChunkConfigLoading(true);
+    try {
+      const res = await request.get(
+        `/api/v1/documents/${docId}/chunking-config`,
+      );
+      const config = res?.data?.data?.chunking_config || {};
+      setChunkConfig({
+        strategy: config.strategy || 'smart',
+        chunk_token_num: config.chunk_token_num || 256,
+        min_chunk_tokens: config.min_chunk_tokens || 10,
+        regex_pattern: config.regex_pattern || '',
+      });
+    } catch (error) {
+      message.error('加载分块配置失败');
+    } finally {
+      setChunkConfigLoading(false);
+    }
+  };
+  const handleChunkConfigSave = async () => {
+    if (!chunkDocId) return;
+    // 校验
+    if (!chunkConfig.strategy) {
+      message.error('请选择分块策略');
+      return;
+    }
+    if (
+      !chunkConfig.chunk_token_num ||
+      chunkConfig.chunk_token_num < 50 ||
+      chunkConfig.chunk_token_num > 2048
+    ) {
+      message.error('分块大小必须在50-2048之间');
+      return;
+    }
+    if (
+      !chunkConfig.min_chunk_tokens ||
+      chunkConfig.min_chunk_tokens < 10 ||
+      chunkConfig.min_chunk_tokens > 500
+    ) {
+      message.error('最小分块大小必须在10-500之间');
+      return;
+    }
+    if (chunkConfig.strategy === 'strict_regex' && !chunkConfig.regex_pattern) {
+      message.error('正则分块策略需要输入正则表达式');
+      return;
+    }
+    setChunkConfigSaving(true);
+    try {
+      await request.put(`/api/v1/documents/${chunkDocId}/chunking-config`, {
+        data: { chunking_config: chunkConfig },
+      });
+      message.success('分块配置保存成功');
+      setChunkModalVisible(false);
+      loadDocumentList(currentKnowledgeBase?.id || '');
+    } catch (error) {
+      message.error('保存分块配置失败');
+    } finally {
+      setChunkConfigSaving(false);
+    }
+  };
+
+  // 移除文档
+  const handleRemoveDocument = async (doc: DocumentData) => {
+    if (!currentKnowledgeBase) return;
+    Modal.confirm({
+      title: `确定要从知识库中移除文档 "${doc.name}" 吗？`,
+      content: '该操作只是移除知识库文件，不会删除原始文件',
+      okText: '确定',
+      cancelText: '取消',
+      onOk: async () => {
+        try {
+          await request.delete(`/api/v1/knowledgebases/documents/${doc.id}`);
+          message.success('文档已从知识库移除');
+          if (currentKnowledgeBase) loadDocumentList(currentKnowledgeBase.id);
+        } catch (error) {
+          message.error('移除文档失败');
+        }
+      },
+    });
   };
 
   const formatParseStatus = (progress: number): string => {
@@ -404,27 +589,110 @@ const KnowledgeManagementPage = () => {
       key: 'status',
       width: 120,
       render: (_: any, record: DocumentData) => (
-        <Tag color={getParseStatusType(record.progress)}>
-          {formatParseStatus(record.progress)}
-        </Tag>
+        <Tooltip
+          title={
+            record.logs && record.logs.length > 0 ? (
+              <div
+                style={{
+                  minWidth: 260,
+                  maxWidth: 440,
+                  maxHeight: 320,
+                  overflowY: 'auto',
+                }}
+              >
+                {record.logs.map((log, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      marginBottom: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: '#999',
+                        fontSize: 12,
+                        minWidth: 60,
+                        maxWidth: 80,
+                        textAlign: 'right',
+                        marginRight: 12,
+                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {log.time}
+                    </span>
+                    <span
+                      style={{
+                        color: '#222',
+                        fontSize: 14,
+                        wordBreak: 'break-all',
+                        overflowWrap: 'break-word',
+                        flex: 1,
+                      }}
+                    >
+                      {log.message}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              '暂无日志'
+            )
+          }
+          placement="top"
+          overlayInnerStyle={{
+            background: '#fff',
+            color: '#222',
+            border: '1px solid #e5e7eb',
+            borderRadius: 8,
+            boxShadow: '0 4px 24px 0 rgba(0,0,0,0.08)',
+            padding: '12px 16px',
+            minWidth: 220,
+            maxWidth: 440,
+            fontSize: 14,
+            lineHeight: 1.7,
+          }}
+        >
+          <Tag color={getParseStatusType(record.progress)}>
+            {formatParseStatus(record.progress)}
+          </Tag>
+        </Tooltip>
       ),
     },
     {
       title: '操作',
       key: 'action',
-      width: 200,
+      width: 260,
       render: (_: any, record: DocumentData) => (
         <Space size="small">
           <Button
             type="link"
             size="small"
             icon={<PlayCircleOutlined />}
+            loading={parseLoading}
             onClick={() => handleParseDocument(record)}
           >
             解析
           </Button>
-          <Button type="link" size="small" icon={<SettingOutlined />}>
+          <Button
+            type="link"
+            size="small"
+            icon={<SettingOutlined />}
+            onClick={() => openChunkModal(record)}
+          >
             分块规则
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleRemoveDocument(record)}
+          >
+            移除
           </Button>
         </Space>
       ),
@@ -433,6 +701,61 @@ const KnowledgeManagementPage = () => {
 
   const handleTableChange = (page: number, pageSize: number) => {
     setPagination((prev) => ({ ...prev, current: page, pageSize }));
+  };
+
+  // 2. 打开弹窗时加载文件列表
+  const openAddDocModal = () => {
+    setAddDocModalVisible(true);
+    loadFileList(1, filePagination.pageSize);
+  };
+  const loadFileList = async (page = 1, pageSize = 10) => {
+    setFileLoading(true);
+    try {
+      const res = await request.get('/api/v1/files', {
+        params: { currentPage: page, size: pageSize },
+      });
+      const data = res?.data?.data || {};
+      setFileList(data.list || []);
+      setFilePagination((prev) => ({
+        ...prev,
+        current: page,
+        pageSize,
+        total: data.total || 0,
+      }));
+    } catch (error) {
+      message.error('加载文件列表失败');
+    } finally {
+      setFileLoading(false);
+    }
+  };
+  const handleFileTableChange = (page: number, pageSize: number) => {
+    loadFileList(page, pageSize);
+  };
+
+  // 3. 提交
+  const handleAddDocSubmit = async () => {
+    if (!currentKnowledgeBase) return;
+    if (selectedFileRowKeys.length === 0) {
+      message.warning('请选择要添加的文件');
+      return;
+    }
+    setFileLoading(true);
+    try {
+      await request.post(
+        `/api/v1/knowledgebases/${currentKnowledgeBase.id}/documents`,
+        {
+          data: { file_ids: selectedFileRowKeys },
+        },
+      );
+      message.success('文档添加成功');
+      setAddDocModalVisible(false);
+      setSelectedFileRowKeys([]);
+      loadDocumentList(currentKnowledgeBase.id);
+    } catch (error) {
+      message.error('添加文档失败');
+    } finally {
+      setFileLoading(false);
+    }
   };
 
   return (
@@ -561,6 +884,24 @@ const KnowledgeManagementPage = () => {
             </Select>
           </Form.Item>
           <Form.Item
+            name="creator_id"
+            label="创建人"
+            rules={[{ required: true, message: '请选择创建人' }]}
+          >
+            <Select
+              placeholder="请选择创建人"
+              showSearch
+              optionFilterProp="children"
+              loading={userList.length === 0}
+            >
+              {userList.map((user) => (
+                <Option key={user.id} value={user.id}>
+                  {user.username}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
             name="permission"
             label="权限"
             initialValue="me"
@@ -622,7 +963,11 @@ const KnowledgeManagementPage = () => {
 
             <div className={styles.documentHeader}>
               <Space>
-                <Button type="primary" icon={<PlusOutlined />}>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={openAddDocModal}
+                >
                   添加文档
                 </Button>
                 <Button
@@ -663,6 +1008,128 @@ const KnowledgeManagementPage = () => {
           </div>
         )}
       </Modal>
+
+      {/* 添加文档弹窗 */}
+      <Modal
+        title="添加文档到知识库"
+        open={addDocModalVisible}
+        onOk={handleAddDocSubmit}
+        onCancel={() => setAddDocModalVisible(false)}
+        confirmLoading={fileLoading}
+        destroyOnClose
+        width={800}
+      >
+        <Table
+          rowSelection={{
+            selectedRowKeys: selectedFileRowKeys,
+            onChange: (keys) => setSelectedFileRowKeys(keys as string[]),
+          }}
+          columns={[
+            { title: '文件名', dataIndex: 'name', key: 'name' },
+            {
+              title: '大小',
+              dataIndex: 'size',
+              key: 'size',
+              width: 120,
+              render: (size: number) =>
+                size < 1024
+                  ? `${size} B`
+                  : size < 1024 * 1024
+                    ? `${(size / 1024).toFixed(2)} KB`
+                    : `${(size / 1024 / 1024).toFixed(2)} MB`,
+            },
+            { title: '类型', dataIndex: 'type', key: 'type', width: 120 },
+          ]}
+          dataSource={fileList}
+          rowKey="id"
+          loading={fileLoading}
+          pagination={false}
+          size="small"
+        />
+        <Pagination
+          current={filePagination.current}
+          pageSize={filePagination.pageSize}
+          total={filePagination.total}
+          onChange={handleFileTableChange}
+          showSizeChanger
+          showQuickJumper
+          style={{ marginTop: 16, textAlign: 'right' }}
+        />
+      </Modal>
+
+      {/* 分块规则弹窗 */}
+      <Modal
+        title={`分块规则 - ${chunkDocName || ''}`}
+        open={chunkModalVisible}
+        onOk={handleChunkConfigSave}
+        onCancel={() => setChunkModalVisible(false)}
+        confirmLoading={chunkConfigSaving}
+        destroyOnClose
+        width={500}
+      >
+        <Form layout="vertical">
+          <Form.Item label="分块策略" required>
+            <Select
+              value={chunkConfig.strategy}
+              onChange={(v) =>
+                setChunkConfig((c: any) => ({ ...c, strategy: v }))
+              }
+            >
+              <Option value="basic">基础分块</Option>
+              <Option value="smart">智能分块</Option>
+              <Option value="advanced">按标题分块</Option>
+              <Option value="strict_regex">正则分块</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="分块大小" required>
+            <Input
+              type="number"
+              min={50}
+              max={2048}
+              value={chunkConfig.chunk_token_num}
+              onChange={(e) =>
+                setChunkConfig((c: any) => ({
+                  ...c,
+                  chunk_token_num: Number(e.target.value),
+                }))
+              }
+              placeholder="50-2048"
+            />
+          </Form.Item>
+          <Form.Item label="最小分块大小" required>
+            <Input
+              type="number"
+              min={10}
+              max={500}
+              value={chunkConfig.min_chunk_tokens}
+              onChange={(e) =>
+                setChunkConfig((c: any) => ({
+                  ...c,
+                  min_chunk_tokens: Number(e.target.value),
+                }))
+              }
+              placeholder="10-500"
+            />
+          </Form.Item>
+          {chunkConfig.strategy === 'strict_regex' && (
+            <Form.Item label="正则表达式" required>
+              <Input
+                value={chunkConfig.regex_pattern}
+                onChange={(e) =>
+                  setChunkConfig((c: any) => ({
+                    ...c,
+                    regex_pattern: e.target.value,
+                  }))
+                }
+                placeholder="请输入正则表达式"
+              />
+            </Form.Item>
+          )}
+        </Form>
+      </Modal>
+
+      {/* 解析进度弹窗 */}
+      {/* 解析进度弹窗相关代码已移除 */}
     </div>
   );
 };

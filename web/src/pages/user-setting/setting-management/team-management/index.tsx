@@ -40,7 +40,7 @@ interface TeamData {
 }
 
 interface TeamMember {
-  userId: string;
+  userId: number | string;
   username: string;
   role: string;
   joinTime: string;
@@ -49,6 +49,7 @@ interface TeamMember {
 interface UserData {
   id: string;
   username: string;
+  email: string;
 }
 
 const TeamManagementPage = () => {
@@ -118,6 +119,7 @@ const TeamManagementPage = () => {
       const users = (data.list || []).map((user: any) => ({
         id: user.id,
         username: user.username,
+        email: user.email, // 添加邮箱字段
       }));
       setUserList(users);
     } catch (error) {
@@ -175,16 +177,54 @@ const TeamManagementPage = () => {
   const handleAddMemberSubmit = async () => {
     try {
       const values = await addMemberForm.validateFields();
+      console.log('表单验证结果:', values); // 调试日志
+      console.log('当前用户列表:', userList); // 调试日志
       setMemberLoading(true);
       if (currentTeam) {
-        await request.post(`/api/v1/teams/${currentTeam.id}/members`, values);
+        // 根据 knowflow 实现，使用邮箱查找用户
+        const selectedUser = userList.find((user) => user.id === values.userId);
+        console.log('选中的用户:', selectedUser); // 调试日志
+
+        if (!selectedUser) {
+          message.error('用户不存在');
+          return;
+        }
+
+        if (!selectedUser.email && !selectedUser.username) {
+          message.error('用户邮箱信息缺失');
+          return;
+        }
+
+        // 参考 knowflow 的请求格式：通过邮箱添加用户到租户
+        const requestData = {
+          email: selectedUser.email || selectedUser.username, // 优先使用邮箱，后备使用用户名
+        };
+
+        console.log('实际发送的请求数据:', requestData);
+
+        if (!requestData.email) {
+          message.error('无法获取用户邮箱信息');
+          return;
+        }
+
+        // 使用 knowflow 的 API 端点格式，直接传递数据
+        const response = await request.post(
+          `/v1/tenant/${currentTeam.id}/user`,
+          {
+            data: requestData,
+          },
+        );
+
         message.success('添加成员成功');
         setAddMemberModalVisible(false);
         await loadTeamMembers(currentTeam.id);
         await loadTeamData(); // Refresh team list to update member counts
       }
     } catch (error) {
-      message.error('添加成员失败');
+      console.error('添加成员错误:', error); // 调试日志
+      message.error(
+        `添加团队成员失败: ${error.message || JSON.stringify(error)}`,
+      );
     } finally {
       setMemberLoading(false);
     }
@@ -485,7 +525,7 @@ const TeamManagementPage = () => {
             >
               {availableUsers.map((user) => (
                 <Option key={user.id} value={user.id}>
-                  {user.username}
+                  {user.username} ({user.email || '无邮箱'})
                 </Option>
               ))}
             </Select>

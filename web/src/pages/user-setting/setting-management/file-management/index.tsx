@@ -113,10 +113,9 @@ const FileManagementPage = () => {
         }
       });
 
-      await request.post('/api/v1/files/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      await request.post('/api/v1/files/upload', {
+        data: formData,
+        // 不要手动加 Content-Type，浏览器会自动生成
       });
 
       message.success(`成功上传 ${uploadFileList.length} 个文件`);
@@ -133,17 +132,42 @@ const FileManagementPage = () => {
   const handleDownload = async (file: FileData) => {
     try {
       message.loading({ content: '正在准备下载...', key: 'download' });
-
-      // Use window.open to trigger download from API
-      const downloadUrl = `/api/v1/files/${file.id}/download`;
-      window.open(downloadUrl, '_blank');
-
-      message.success({
-        content: `开始下载文件 "${file.name}"`,
+      // fetch blob
+      const response = await fetch(`/api/v1/files/${file.id}/download`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/octet-stream',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(
+          `服务器返回错误: ${response.status} ${response.statusText}`,
+        );
+      }
+      const blob = await response.blob();
+      if (!blob || blob.size === 0) {
+        throw new Error('文件内容为空');
+      }
+      // 创建下载链接
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        message.success({
+          content: `文件 "${file.name}" 下载成功`,
+          key: 'download',
+        });
+      }, 100);
+    } catch (error: any) {
+      message.error({
+        content: `文件下载失败: ${error?.message || '未知错误'}`,
         key: 'download',
       });
-    } catch (error) {
-      message.error({ content: '文件下载失败', key: 'download' });
     }
   };
 
@@ -169,7 +193,7 @@ const FileManagementPage = () => {
     setLoading(true);
     try {
       await request.delete('/api/v1/files/batch', {
-        data: { fileIds: selectedRowKeys },
+        data: { ids: selectedRowKeys },
       });
       setSelectedRowKeys([]);
       message.success(`成功删除 ${selectedRowKeys.length} 个文件`);
@@ -259,13 +283,29 @@ const FileManagementPage = () => {
       dataIndex: 'type',
       key: 'type',
       width: 120,
-      render: (type: string) => <Tag color="blue">{getFileType(type)}</Tag>,
+      render: (type: string) => {
+        let color = 'default';
+        if (!type) color = 'default';
+        else if (type.includes('pdf')) color = 'red';
+        else if (type.includes('image')) color = 'green';
+        else if (type.includes('text')) color = 'blue';
+        else if (type.includes('spreadsheet') || type.includes('excel'))
+          color = 'cyan';
+        else if (type.includes('presentation') || type.includes('powerpoint'))
+          color = 'orange';
+        else if (type.includes('word') || type.includes('document'))
+          color = 'geekblue';
+        else color = 'purple';
+        return <Tag color={color}>{type || '-'}</Tag>;
+      },
     },
     {
       title: '创建时间',
       dataIndex: 'create_time',
       key: 'create_time',
       width: 180,
+      render: (value: number) =>
+        value ? new Date(value).toLocaleString() : '-',
     },
     {
       title: '操作',

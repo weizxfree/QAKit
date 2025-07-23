@@ -11,7 +11,6 @@ import {
 import {
   Button,
   Card,
-  Checkbox,
   Form,
   Input,
   Modal,
@@ -19,7 +18,6 @@ import {
   Popconfirm,
   Space,
   Table,
-  Tag,
   message,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -29,11 +27,8 @@ interface UserData {
   id: string;
   username: string;
   email: string;
-  nickname?: string;
-  is_superuser: boolean;
-  is_active: boolean;
-  create_time: string;
-  update_time: string;
+  createTime: string;
+  updateTime: string;
 }
 
 const UserManagementPage = () => {
@@ -199,7 +194,7 @@ const UserManagementPage = () => {
         }
         message.success('更新用户成功');
       } else {
-        await request.post('/api/v1/users', values);
+        await request.post('/api/v1/users', { data: values });
         message.success('创建用户成功');
       }
       setUserModalVisible(false);
@@ -239,38 +234,14 @@ const UserManagementPage = () => {
       key: 'email',
     },
     {
-      title: '昵称',
-      dataIndex: 'nickname',
-      key: 'nickname',
-      render: (text: string) => text || '-',
-    },
-    {
-      title: '角色',
-      dataIndex: 'is_superuser',
-      key: 'is_superuser',
-      render: (value: boolean) => (
-        <Tag color={value ? 'red' : 'blue'}>
-          {value ? '超级管理员' : '普通用户'}
-        </Tag>
-      ),
-    },
-    {
-      title: '状态',
-      dataIndex: 'is_active',
-      key: 'is_active',
-      render: (value: boolean) => (
-        <Tag color={value ? 'green' : 'default'}>{value ? '激活' : '禁用'}</Tag>
-      ),
-    },
-    {
       title: '创建时间',
-      dataIndex: 'create_time',
-      key: 'create_time',
+      dataIndex: 'createTime',
+      key: 'createTime',
     },
     {
       title: '更新时间',
-      dataIndex: 'update_time',
-      key: 'update_time',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
     },
     {
       title: '操作',
@@ -430,9 +401,6 @@ const UserManagementPage = () => {
           >
             <Input placeholder="请输入邮箱" disabled={!!editingUser} />
           </Form.Item>
-          <Form.Item name="nickname" label="昵称">
-            <Input placeholder="请输入昵称" />
-          </Form.Item>
           {!editingUser && (
             <Form.Item
               name="password"
@@ -442,16 +410,6 @@ const UserManagementPage = () => {
               <Input.Password placeholder="请输入密码" />
             </Form.Item>
           )}
-          <Form.Item name="is_superuser" valuePropName="checked">
-            <Checkbox>超级管理员</Checkbox>
-          </Form.Item>
-          <Form.Item
-            name="is_active"
-            valuePropName="checked"
-            initialValue={true}
-          >
-            <Checkbox>激活状态</Checkbox>
-          </Form.Item>
         </Form>
       </Modal>
 
