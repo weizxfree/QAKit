@@ -140,7 +140,6 @@ const SearchSidebar = ({
       theme={'light'}
       width={'220px'}
     >
-      <div className={styles.header}>知识库列表</div>
       <Spin spinning={loading}>
         <Tree
           className={styles.list}

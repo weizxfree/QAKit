@@ -22,7 +22,6 @@ const FlowList = () => {
 
   return (
     <Flex className={styles.flowListWrapper} vertical flex={1}>
-      <div className={styles.topTitle}>Agent</div>
       <div className={styles.topWrapper}>
         <span className={styles.title}>欢迎回来, {userInfo.nickname}</span>
         <p className={styles.description}>今天我们要使用哪个Agent？</p>

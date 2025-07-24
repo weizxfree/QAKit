@@ -42,7 +42,6 @@ const KnowledgeList = () => {
 
   return (
     <Flex className={styles.knowledge} vertical flex={1} id="scrollableDiv">
-      <div className={styles.topTitle}>知识库</div>
       <div className={styles.topWrapper}>
         <div>
           <span className={styles.title}>
