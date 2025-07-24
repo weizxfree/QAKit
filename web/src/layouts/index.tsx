@@ -15,7 +15,7 @@ const App: React.FC = () => {
 
   return (
     <Layout className={styles.layout}>
-      <Sider width="60px" className={styles.siderStyle}>
+      <Sider width="88px" className={styles.siderStyle}>
         <Header></Header>
       </Sider>
       <Layout>

@@ -20,6 +20,24 @@
   background-color: '#001529';
 }
 
+// 强制覆盖 Ant Design 的侧边栏样式
+:global(.css-dev-only-do-not-override-1wxecgq.ant-layout .ant-layout-sider) {
+  background: #f8fafc !important;
+}
+
+:global(.ant-layout-sider) {
+  background: #f8fafc !important;
+}
+
+// 覆盖 Header 组件的背景色
+:global(.ant-layout-header) {
+  background: #f8fafc !important;
+}
+
+:global(.css-dev-only-do-not-override-1wxecgq .ant-layout-header) {
+  background: #f8fafc !important;
+}
+
 body {
   margin: 0;
 }
