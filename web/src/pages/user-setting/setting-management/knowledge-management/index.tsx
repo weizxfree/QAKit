@@ -27,11 +27,11 @@ import {
   Space,
   Table,
   Tag,
-  Tooltip,
   message,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './index.less';
+import { ParsingStatusCard } from './parsing-status-card';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -455,18 +455,6 @@ const KnowledgeManagementPage = () => {
     });
   };
 
-  const formatParseStatus = (progress: number): string => {
-    if (progress === 0) return '未解析';
-    if (progress === 1) return '已完成';
-    return `解析中 ${Math.floor(progress * 100)}%`;
-  };
-
-  const getParseStatusType = (progress: number): string => {
-    if (progress === 0) return 'default';
-    if (progress === 1) return 'success';
-    return 'processing';
-  };
-
   const columns = [
     {
       title: '序号',
@@ -589,77 +577,7 @@ const KnowledgeManagementPage = () => {
       key: 'status',
       width: 120,
       render: (_: any, record: DocumentData) => (
-        <Tooltip
-          title={
-            record.logs && record.logs.length > 0 ? (
-              <div
-                style={{
-                  minWidth: 260,
-                  maxWidth: 440,
-                  maxHeight: 320,
-                  overflowY: 'auto',
-                }}
-              >
-                {record.logs.map((log, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      marginBottom: 8,
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: '#999',
-                        fontSize: 12,
-                        minWidth: 60,
-                        maxWidth: 80,
-                        textAlign: 'right',
-                        marginRight: 12,
-                        fontFamily: 'monospace',
-                        whiteSpace: 'nowrap',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {log.time}
-                    </span>
-                    <span
-                      style={{
-                        color: '#222',
-                        fontSize: 14,
-                        wordBreak: 'break-all',
-                        overflowWrap: 'break-word',
-                        flex: 1,
-                      }}
-                    >
-                      {log.message}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              '暂无日志'
-            )
-          }
-          placement="top"
-          overlayInnerStyle={{
-            background: '#fff',
-            color: '#222',
-            border: '1px solid #e5e7eb',
-            borderRadius: 8,
-            boxShadow: '0 4px 24px 0 rgba(0,0,0,0.08)',
-            padding: '12px 16px',
-            minWidth: 220,
-            maxWidth: 440,
-            fontSize: 14,
-            lineHeight: 1.7,
-          }}
-        >
-          <Tag color={getParseStatusType(record.progress)}>
-            {formatParseStatus(record.progress)}
-          </Tag>
-        </Tooltip>
+        <ParsingStatusCard record={record} />
       ),
     },
     {
