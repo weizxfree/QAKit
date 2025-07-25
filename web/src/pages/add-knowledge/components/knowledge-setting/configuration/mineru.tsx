@@ -35,14 +35,14 @@ export function MinerUConfiguration() {
         <Form.Item
           name={['parser_config', 'knowflow_api_url']}
           label="KnowFlow API URL"
-          tooltip="KnowFlow 服务的 API 地址，例如: http://localhost:5000"
+          tooltip="KnowFlow 服务的 API 地址，Docker Compose 环境请使用 http://knowflow-backend:5000"
           rules={[
             { required: true, message: '请输入 KnowFlow API URL' },
             { type: 'url', message: '请输入有效的 URL 地址' },
           ]}
-          initialValue="http://localhost:5000"
+          initialValue="http://knowflow-backend:5000"
         >
-          <Input placeholder="http://localhost:5000" />
+          <Input placeholder="http://knowflow-backend:5000" />
         </Form.Item>
 
         <Form.Item
