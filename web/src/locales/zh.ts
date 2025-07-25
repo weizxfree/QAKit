@@ -506,7 +506,7 @@ General：实体和关系提取提示来自 GitHub - microsoft/graphrag：基于
       extensionTitle: 'Chrome 插件',
       tokenError: '请先创建 API Token!',
       betaError: '请先在系统设置中申请API密钥。',
-      searching: '搜索中...',
+      searching: '搜索中',
       parsing: '解析中',
       uploading: '上传中',
       uploadFailed: '上传失败',

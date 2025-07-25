@@ -191,11 +191,17 @@ const MarkdownContent = ({
     [getPopoverContent],
   );
 
-  return (
-    contentWithCursor === '搜索中...' ? (
-      <div className={styles.mySearching}>{contentWithCursor}</div>
-    ) : (
-      <Markdown
+  return contentWithCursor === '搜索中' ? (
+    <div className={styles.mySearching}>
+      搜索中
+      <span className={styles.dots}>
+        <span>.</span>
+        <span>.</span>
+        <span>.</span>
+      </span>
+    </div>
+  ) : (
+    <Markdown
       rehypePlugins={[rehypeWrapReference, rehypeKatex, rehypeRaw]}
       remarkPlugins={[remarkGfm, remarkMath]}
       className={styles.markdownContentWrapper}
@@ -221,9 +227,7 @@ const MarkdownContent = ({
     >
       {contentWithCursor}
     </Markdown>
-    )
-    
   );
-};  
+};
 
 export default MarkdownContent;
