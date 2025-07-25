@@ -1,3 +1,4 @@
+import ChunkingConfig from '@/components/chunking-config';
 import MaxTokenNumber from '@/components/max-token-number';
 import { IModalManagerChildrenProps } from '@/components/modal-manager';
 import {
@@ -84,6 +85,12 @@ const ChunkMethodModal: React.FC<IProps> = ({
       ...values.parser_config,
       pages: values.pages?.map((x: any) => [x.from, x.to]) ?? [],
     };
+
+    // 如果是MinerU解析器，添加分块配置到parser_config中
+    if (selectedTag === DocumentParserType.MinerU && values.chunking_config) {
+      parser_config.chunking_config = values.chunking_config;
+    }
+
     onOk(selectedTag, parser_config);
   };
 
@@ -108,6 +115,8 @@ const ChunkMethodModal: React.FC<IProps> = ({
 
   const showEntityTypes = selectedTag === DocumentParserType.KnowledgeGraph;
 
+  const showMinerUChunking = selectedTag === DocumentParserType.MinerU;
+
   const showExcelToHtml =
     selectedTag === DocumentParserType.Naive && documentExtension === 'xlsx';
 
@@ -123,7 +132,13 @@ const ChunkMethodModal: React.FC<IProps> = ({
         parserConfig?.pages?.map((x) => ({ from: x[0], to: x[1] })) ?? [];
       form.setFieldsValue({
         pages: pages.length > 0 ? pages : [{ from: 1, to: 1024 }],
-        parser_config: omit(parserConfig, 'pages'),
+        parser_config: omit(parserConfig, ['pages', 'chunking_config']),
+        chunking_config: parserConfig?.chunking_config || {
+          strategy: 'smart',
+          chunk_token_num: 256,
+          min_chunk_tokens: 10,
+          regex_pattern: '',
+        },
       });
     }
   }, [form, parserConfig, visible]);
@@ -311,6 +326,11 @@ const ChunkMethodModal: React.FC<IProps> = ({
           )}
           {showExcelToHtml && <ExcelToHtml></ExcelToHtml>}
         </DatasetConfigurationContainer>
+        {showMinerUChunking && (
+          <DatasetConfigurationContainer>
+            <ChunkingConfig />
+          </DatasetConfigurationContainer>
+        )}
         {showRaptorParseConfiguration(selectedTag) && (
           <DatasetConfigurationContainer>
             <ParseConfiguration></ParseConfiguration>

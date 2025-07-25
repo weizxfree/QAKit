@@ -1,3 +1,4 @@
+import kbService from '@/services/knowledge-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { message } from 'antd';
 import axios from 'axios';
@@ -9,6 +10,12 @@ interface KnowFlowApiConfig {
   knowflow_api_url: string;
   parse_method?: string;
   language?: string;
+  chunking_config?: {
+    strategy?: 'basic' | 'smart' | 'advanced' | 'strict_regex';
+    chunk_token_num?: number;
+    min_chunk_tokens?: number;
+    regex_pattern?: string;
+  };
 }
 
 // 调用 KnowFlow 解析 API
@@ -16,21 +23,34 @@ const callKnowFlowParseApi = async (
   documentId: string,
   config: KnowFlowApiConfig,
 ) => {
-  const { knowflow_api_url, parse_method = 'auto', language = 'ch' } = config;
+  const {
+    knowflow_api_url,
+    parse_method = 'auto',
+    language = 'ch',
+    chunking_config,
+  } = config;
 
   // 确保 URL 格式正确
   const baseUrl = knowflow_api_url.endsWith('/')
     ? knowflow_api_url.slice(0, -1)
     : knowflow_api_url;
 
+  // 准备请求体
+  const requestBody: any = {
+    parse_method,
+    language,
+  };
+
+  // 如果有分块配置，添加到请求体中
+  if (chunking_config) {
+    requestBody.chunking_config = chunking_config;
+  }
+
   try {
     // 调用 KnowFlow 的文档解析 API
     const response = await axios.post(
       `${baseUrl}/api/v1/knowledgebases/documents/${documentId}/parse`,
-      {
-        parse_method,
-        language,
-      },
+      requestBody,
       {
         timeout: 30000, // 30秒超时
         headers: {
@@ -110,14 +130,33 @@ export const useRunMinerUDocument = () => {
 
       // 根据 run 参数决定操作类型
       if (run === 1) {
+        // 获取每个文档的详细信息，包括分块配置
+        const { data: docInfoResponse } = await kbService.document_infos({
+          doc_ids,
+        });
+        if (docInfoResponse.code !== 0) {
+          throw new Error('无法获取文档信息');
+        }
+
+        const documentInfos = docInfoResponse.data;
+
         // 开始解析
         const results = [];
-        for (const docId of doc_ids) {
+        for (const docInfo of documentInfos) {
           try {
-            const result = await callKnowFlowParseApi(docId, knowflowConfig);
+            // 为每个文档准备单独的配置，包含其分块配置
+            const docConfig: KnowFlowApiConfig = {
+              ...knowflowConfig,
+              // 使用文档自己的分块配置，如果存在的话
+              chunking_config:
+                docInfo.parser_config?.chunking_config ||
+                knowflowConfig.chunking_config,
+            };
+
+            const result = await callKnowFlowParseApi(docInfo.id, docConfig);
             results.push(result);
           } catch (error: any) {
-            console.error(`文档 ${docId} 解析失败:`, error);
+            console.error(`文档 ${docInfo.id} 解析失败:`, error);
             results.push({ code: -1, message: error.message });
           }
         }
