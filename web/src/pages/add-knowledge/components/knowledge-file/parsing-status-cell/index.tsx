@@ -68,7 +68,7 @@ const PopoverContent = ({ record }: IProps) => {
     {
       key: 'progress_msg',
       label: t('progressMsg'),
-      children: replaceText(record.progress_msg.trim()),
+      children: replaceText(record.progress_msg?.trim() || ''),
     },
   ];
 
