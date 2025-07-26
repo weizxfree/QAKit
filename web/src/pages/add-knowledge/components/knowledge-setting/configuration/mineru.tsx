@@ -38,7 +38,10 @@ export function MinerUConfiguration() {
           tooltip="KnowFlow 服务的 API 地址，Docker Compose 环境请使用 http://knowflow-backend:5000"
           rules={[
             { required: true, message: '请输入 KnowFlow API URL' },
-            { type: 'url', message: '请输入有效的 URL 地址' },
+            {
+              pattern: /^https?:\/\/[a-zA-Z0-9._-]+(:[0-9]+)?(\/.*)??$/,
+              message: '请输入有效的 URL 地址（支持 Docker 内部地址）',
+            },
           ]}
           initialValue="http://knowflow-backend:5000"
         >
