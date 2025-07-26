@@ -1,13 +1,11 @@
 import kbService from '@/services/knowledge-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { message } from 'antd';
-import axios from 'axios';
 import { get } from 'lodash';
 import { useFetchKnowledgeBaseConfiguration } from './knowledge-hooks';
 
 // KnowFlow API 调用接口
 interface KnowFlowApiConfig {
-  knowflow_api_url: string;
   parse_method?: string;
   language?: string;
   chunking_config?: {
@@ -18,22 +16,12 @@ interface KnowFlowApiConfig {
   };
 }
 
-// 调用 KnowFlow 解析 API
+// 调用 KnowFlow 解析 API (通过nginx代理)
 const callKnowFlowParseApi = async (
   documentId: string,
   config: KnowFlowApiConfig,
 ) => {
-  const {
-    knowflow_api_url,
-    parse_method = 'auto',
-    language = 'ch',
-    chunking_config,
-  } = config;
-
-  // 确保 URL 格式正确
-  const baseUrl = knowflow_api_url.endsWith('/')
-    ? knowflow_api_url.slice(0, -1)
-    : knowflow_api_url;
+  const { parse_method = 'auto', language = 'ch', chunking_config } = config;
 
   // 准备请求体
   const requestBody: any = {
@@ -47,19 +35,13 @@ const callKnowFlowParseApi = async (
   }
 
   try {
-    // 调用 KnowFlow 的文档解析 API
-    const response = await axios.post(
-      `${baseUrl}/api/v1/knowledgebases/documents/${documentId}/parse`,
+    // 通过统一的API服务调用knowflow解析接口
+    const response = await kbService.knowflow_document_parse(
       requestBody,
-      {
-        timeout: 30000, // 30秒超时
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+      `${documentId}/parse`,
     );
 
-    return response.data;
+    return response;
   } catch (error: any) {
     console.error('KnowFlow API 调用失败:', error);
     throw new Error(
@@ -68,27 +50,15 @@ const callKnowFlowParseApi = async (
   }
 };
 
-// 获取 KnowFlow 解析进度
-const getKnowFlowParseProgress = async (
-  documentId: string,
-  knowflowApiUrl: string,
-) => {
-  const baseUrl = knowflowApiUrl.endsWith('/')
-    ? knowflowApiUrl.slice(0, -1)
-    : knowflowApiUrl;
-
+// 获取 KnowFlow 解析进度 (通过nginx代理)
+const getKnowFlowParseProgress = async (documentId: string) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/api/v1/knowledgebases/documents/${documentId}/parse/progress`,
-      {
-        timeout: 10000,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+    const response = await kbService.knowflow_parse_progress(
+      undefined,
+      `${documentId}/parse/progress`,
     );
 
-    return response.data;
+    return response;
   } catch (error: any) {
     console.error('获取 KnowFlow 解析进度失败:', error);
     throw new Error(
@@ -123,10 +93,6 @@ export const useRunMinerUDocument = () => {
         'parser_config',
         {},
       ) as KnowFlowApiConfig;
-
-      if (!knowflowConfig.knowflow_api_url) {
-        throw new Error('请在知识库配置中设置 KnowFlow API URL');
-      }
 
       // 根据 run 参数决定操作类型
       if (run === 1) {
@@ -197,14 +163,8 @@ export const useFetchMinerUProgress = () => {
     mutateAsync,
   } = useMutation({
     mutationKey: ['fetchMinerUProgress'],
-    mutationFn: async ({
-      documentId,
-      knowflowApiUrl,
-    }: {
-      documentId: string;
-      knowflowApiUrl: string;
-    }) => {
-      const result = await getKnowFlowParseProgress(documentId, knowflowApiUrl);
+    mutationFn: async ({ documentId }: { documentId: string }) => {
+      const result = await getKnowFlowParseProgress(documentId);
       return result;
     },
     onError: (error: any) => {

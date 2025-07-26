@@ -30,24 +30,8 @@ export function MinerUConfiguration() {
 
       <Divider></Divider>
 
-      {/* KnowFlow API 配置 */}
+      {/* MinerU 解析配置 */}
       <DatasetConfigurationContainer>
-        <Form.Item
-          name={['parser_config', 'knowflow_api_url']}
-          label="KnowFlow API URL"
-          tooltip="KnowFlow 服务的 API 地址，Docker Compose 环境请使用 http://knowflow-backend:5000"
-          rules={[
-            { required: true, message: '请输入 KnowFlow API URL' },
-            {
-              pattern: /^https?:\/\/[a-zA-Z0-9._-]+(:[0-9]+)?(\/.*)??$/,
-              message: '请输入有效的 URL 地址（支持 Docker 内部地址）',
-            },
-          ]}
-          initialValue="http://knowflow-backend:5000"
-        >
-          <Input placeholder="http://knowflow-backend:5000" />
-        </Form.Item>
-
         <Form.Item
           name={['parser_config', 'parse_method']}
           label="解析方法"

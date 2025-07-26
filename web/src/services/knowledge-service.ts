@@ -32,6 +32,8 @@ const {
   upload_and_parse,
   listTagByKnowledgeIds,
   setMeta,
+  knowflow_document_parse,
+  knowflow_parse_progress,
 } = api;
 
 const methods = {
@@ -150,6 +152,15 @@ const methods = {
     url: listTagByKnowledgeIds,
     method: 'get',
   },
+  // knowflow mineru parser
+  knowflow_document_parse: {
+    url: knowflow_document_parse,
+    method: 'post',
+  },
+  knowflow_parse_progress: {
+    url: knowflow_parse_progress,
+    method: 'get',
+  },
 };
 
 const kbService = registerServer<keyof typeof methods>(methods, request);
@@ -169,14 +180,10 @@ export function getKnowledgeGraph(knowledgeId: string) {
   return request.get(api.getKnowledgeGraph(knowledgeId));
 }
 
-export const listDataset = (
-  params?: any,
-  body?: any,
-) => request.post(api.kb_list, { data: body || {}, params });
+export const listDataset = (params?: any, body?: any) =>
+  request.post(api.kb_list, { data: body || {}, params });
 
-export const listDocument = (
-  params?: any,
-  body?: any,
-) => request.post(api.get_document_list, { data: body || {}, params });
+export const listDocument = (params?: any, body?: any) =>
+  request.post(api.get_document_list, { data: body || {}, params });
 
 export default kbService;
