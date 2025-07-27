@@ -41,7 +41,9 @@ const callKnowFlowParseApi = async (
       `${documentId}/parse`,
     );
 
-    return response;
+    // 因为 request 设置了 getResponse: true，需要解析响应数据
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     console.error('KnowFlow API 调用失败:', error);
     throw new Error(
@@ -58,7 +60,9 @@ const getKnowFlowParseProgress = async (documentId: string) => {
       `${documentId}/parse/progress`,
     );
 
-    return response;
+    // 因为 request 设置了 getResponse: true，需要解析响应数据
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     console.error('获取 KnowFlow 解析进度失败:', error);
     throw new Error(
