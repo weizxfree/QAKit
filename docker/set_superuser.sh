@@ -74,7 +74,7 @@ fi
 MYSQL_PASSWORD=${MYSQL_PASSWORD:-infini_rag_flow}
 MYSQL_USER=${MYSQL_USER:-root}
 MYSQL_CONTAINER=${MYSQL_CONTAINER:-ragflow-mysql}
-MYSQL_DATABASE=${MYSQL_DATABASE:-ragflow}
+MYSQL_DATABASE=${MYSQL_DATABASE:-rag_flow}
 
 # 检查MySQL容器是否运行
 check_mysql_container() {
