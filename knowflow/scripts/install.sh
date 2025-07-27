@@ -203,20 +203,20 @@ RAGFLOW_BASE_URL=http://ragflow-server:9380
 # 以下配置使用Docker容器名，适用于Docker Compose环境
 # =======================================================
 
-# Elasticsearch 配置
-ES_HOST=es01
-ES_PORT=9200
-
 # 数据库配置
-DB_HOST=mysql
+DB_HOST=\${DB_HOST:-mysql}
 MYSQL_PORT=3306
 
 # MinIO 对象存储配置
-MINIO_HOST=minio
+MINIO_HOST=\${MINIO_HOST:-minio}
 MINIO_PORT=9000
 
+# Elasticsearch 配置
+ES_HOST=\${ES_HOST:-es01}
+ES_PORT=9200
+
 # Redis 配置
-REDIS_HOST=redis
+REDIS_HOST=\${REDIS_HOST:-redis}
 REDIS_PORT=6379
 
 # KnowFlow API 配置
@@ -276,45 +276,9 @@ EOF
     fi
     
     echo -e "${GREEN}✅ 阶段 1 完成: 环境变量自动生成${NC}"
-    return 0
 }
 
-# 阶段2: 自动挂载文件到 RAGFlow
-run_auto_mount() {
-    # 检查auto_mount.py是否存在
-    if [ ! -f "$PROJECT_ROOT/scripts/auto_mount.py" ]; then
-        echo -e "${RED}❌ 未找到auto_mount.py脚本${NC}"
-        return 1
-    fi
-    
-    # 使用虚拟环境中的Python
-    VENV_PYTHON="$VENV_DIR/bin/python"
-    
-    # 检查虚拟环境是否可用
-    if [ ! -f "$VENV_PYTHON" ]; then
-        echo -e "${RED}❌ 虚拟环境不可用，请先运行虚拟环境设置${NC}"
-        return 1
-    fi
-    
-    echo "运行自动挂载脚本..."
-    if ! "$VENV_PYTHON" "$PROJECT_ROOT/scripts/auto_mount.py"; then
-        echo -e "${RED}❌ 自动挂载失败${NC}"
-        return 1
-    fi
-    
-    echo -e "${GREEN}✅ 自动挂载完成${NC}"
-    echo -e "${GREEN}✅ 阶段 2 完成: 自动挂载文件到 RAGFlow${NC}"
-    return 0
-}
 
-# 阶段3: 重启 RAGFlow 服务
-restart_ragflow_services() {
-    echo ""
-    echo -e "${BLUE}📋 阶段 3: 重启 RAGFlow 服务${NC}"
-    echo "=================================="
-    echo -e "${GREEN}✅ 阶段 3 完成: 重启 RAGFlow 服务${NC}"
-    return 0
-}
 
 # 显示配置说明
 show_config_instructions() {
@@ -368,22 +332,7 @@ main() {
     
     # 阶段1: 环境变量自动生成
     if ! setup_env_file; then
-        echo -e "${RED}❌ 阶段1失败：环境变量自动生成失败，安装终止${NC}"
-        exit 1
-    fi
-    
-    # 阶段2: 自动挂载文件到 RAGFlow
-    echo ""
-    echo -e "${BLUE}📋 阶段 2: 自动挂载文件到 RAGFlow${NC}"
-    echo "=================================="
-    if ! run_auto_mount; then
-        echo -e "${RED}❌ 阶段2失败：自动挂载文件到 RAGFlow失败，安装终止${NC}"
-        exit 1
-    fi
-    
-    # 阶段3: 重启 RAGFlow 服务
-    if ! restart_ragflow_services; then
-        echo -e "${RED}❌ 阶段3失败：重启 RAGFlow 服务失败，安装终止${NC}"
+        echo -e "${RED}❌ 环境变量自动生成失败，安装终止${NC}"
         exit 1
     fi
     
