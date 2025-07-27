@@ -115,6 +115,7 @@ graph TB
 
 </div>
 
+
 ---
 
 ## 🚀 快速开始
@@ -191,6 +192,7 @@ docker compose up -d
 
 ### 方式二：源码部署
 
+
 #### 前置要求
 - Python 3.9+
 - Node.js 16+ 
@@ -249,6 +251,9 @@ export HF_ENDPOINT=https://hf-mirror.com
 确保 `conf/service_conf.yaml` 中所有主机和端口配置正确。
 
 5. **启动后端服务**
+
+方案一：
+
 ```bash
 # 设置内存分配器和启动任务执行器
 JEMALLOC_PATH=$(pkg-config --variable=libdir jemalloc)/libjemalloc.so
@@ -257,6 +262,13 @@ LD_PRELOAD=$JEMALLOC_PATH python rag/svr/task_executor.py 1
 # 启动 API 服务器
 python api/ragflow_server.py
 ```
+
+方案二：
+
+```bash
+./local_entrypoint.sh
+```
+
 
 #### RAGFlow 前端部署
 
@@ -363,54 +375,13 @@ mineru:
       server_url: "http://localhost:30000"
 ```
 
-### 🐳 通过 RAGFlow 网络连接（推荐）
-
-如果您已经部署了 RAGFlow 服务，可以通过连接 RAGFlow 的 Docker 网络来实现更稳定的网络连接：
-
-**修改 docker-compose.yml 文件：**
-
-```yaml
-services:
-  frontend:
-    container_name: knowflow-frontend
-    image: zxwei/knowflow-web:v0.7.0
-    ports:
-      - "8081:80"
-    depends_on:
-      - backend
-    networks:
-      - management_network
-      - ragflow_ragflow  # 连接到 RAGFlow 网络
-
-  backend:
-    container_name: knowflow-backend
-    image: zxwei/knowflow-server:v1.1.3
-    ports:
-      - "5000:5000"
-    networks:
-      - management_network
-      - ragflow_ragflow  # 连接到 RAGFlow 网络
-
-networks:
-  management_network:
-    driver: bridge
-  ragflow_ragflow:
-    external: true  # 使用外部的 RAGFlow 网络
-```
-
-**配置 .env 文件：**
-
-```bash
-# 通过 RAGFlow 网络连接的服务地址
-ES_HOST=ragflow-es-01
-DB_HOST=ragflow-mysql
-MINIO_HOST=ragflow-minio
-REDIS_HOST=ragflow-redis
-```
 
 ---
 
 ## 🔧 编译 Docker（开发者）
+
+
+### 编译 KnowFlow-Server 镜像
 
 ```bash
 # 后端镜像
@@ -418,6 +389,20 @@ docker buildx build --platform linux/amd64 --target backend -t zxwei/knowflow-se
 
 # 前端镜像
 docker buildx build --platform linux/amd64 --target frontend -t zxwei/knowflow-web:v0.3.0 --push .
+```
+
+### 编译 KnowFlow 全镜像
+
+```bash
+# 安装 uv
+sudo snap install astral-uv --classic
+uv run download_deps.py
+docker build -f Dockerfile.deps -t infiniflow/ragflow_deps .
+docker build --build-arg LIGHTEN=1 -f Dockerfile -t infiniflow/ragflow:nightly-slim .
+
+vim docker/.env 
+RAGFLOW_IMAGE=infiniflow/ragflow:nightly-slim
+
 ```
 
 ---
@@ -430,7 +415,8 @@ docker buildx build --platform linux/amd64 --target frontend -t zxwei/knowflow-w
 - [x] MinerU 2.0 接入
 - [x] RAGFlow 前端 UI 源码开源
 - [x] API Token 自动生成机制
-- [ ] LDAP/SSO 单点登录集成
+- [ ] TextIn 接入
+- [ ] MinerU 支持自动问题，自动关键词，Raptor，知识图谱 
 - [ ] 多租户数据隔离
 - [ ] 知识库版本管理
 - [ ] 文档审批工作流
@@ -502,6 +488,35 @@ mineru:
 
 ---
 
+
+## 📄 许可证
+
+**KnowFlow** 采用 [GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE) 开源许可证。
+
+### ✅ 您可以自由地：
+- **使用**：个人学习、研究、开发和部署
+- **修改**：根据需要修改源代码  
+- **分发**：分享给他人使用
+- **贡献**：提交 PR 和 Issue，参与开源协作
+
+### ⚠️ 重要限制条件：
+- **源码开放**：如果您修改了 KnowFlow 并通过网络提供服务，必须向用户提供修改后的完整源代码
+- **相同许可**：基于 KnowFlow 的衍生作品必须同样采用 AGPL-3.0 许可证
+- **版权保留**：保留原始版权声明和许可证信息
+
+### 🏢 商业使用说明
+AGPL-3.0 允许商业使用，但有重要约束：
+- 如果您将修改版本作为网络服务提供，必须开源所有修改
+- 如果这不符合您的商业需求，请联系获取商业许可
+
+### 📞 商业许可咨询
+- 💬 微信：skycode007（备注"商业授权咨询"）
+
+> **注意**：AGPL-3.0 是一个严格的 copyleft 许可证，特别适用于网络服务。使用前请仔细阅读 [完整许可证条款](LICENSE)。
+
+
+---
+
 ## 🤝 社区与支持
 
 ### 💬 交流群
@@ -519,14 +534,6 @@ mineru:
 本项目基于以下开源项目开发：
 
 - [ragflow](https://github.com/infiniflow/ragflow) - 核心 RAG 框架
-- [v3-admin-vite](https://github.com/un-pany/v3-admin-vite) - 管理后台框架
-- [ragflow-plus](https://github.com/zstar1003/ragflow-plus/) - 用户管理参考
-
----
-
-## 📊 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=weizxfree/KnowFlow&type=Date)](https://star-history.com/#weizxfree/KnowFlow&Date)
 
 ---
 
