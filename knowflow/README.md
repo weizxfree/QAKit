@@ -1,11 +1,10 @@
 <div align="center">
-  <img src="assets/logo.png" alt="KnowFlow 企业知识库" width="30%">
+  <img src="knowflow/assets/logo.png" alt="KnowFlow 企业知识库" width="30%">
 </div>
 
-## 项目介绍
+# KnowFlow - 企业级智能知识库解决方案
 
-KnowFlow 是一个基于 RAGFlow 的开源项目，持续兼容 RAGFlow 官方版本，同时会将社区里做的比较好的最佳实践整合进来。
-KnowFlow 可以理解成 RAGFlow 官方开源产品真正落地企业场景的最后一公里服务。
+[![Star History Chart](https://api.star-history.com/svg?repos=weizxfree/KnowFlow&type=Date)](https://star-history.com/#weizxfree/KnowFlow&Date)
 
 🌐 **官方网站**: [https://weizxfree.github.io/KnowFlowSite/](https://weizxfree.github.io/KnowFlowSite/)
 
@@ -13,71 +12,327 @@ KnowFlow 可以理解成 RAGFlow 官方开源产品真正落地企业场景的�
 
 ---
 
-### 🚀 项目亮点
+## 🚀 什么是 KnowFlow
+
+**KnowFlow** 是一个基于 RAGFlow 的企业级开源知识库解决方案，专注于为企业提供真正落地的最后一公里服务。我们持续兼容 RAGFlow 官方版本，同时将社区最佳实践整合进来，为企业知识管理提供更加完善的解决方案。
+
+### 🎯 产品定位
+
+- **RAGFlow 企业落地的最后一公里**：解决从开源到生产的关键差距
+- **插件化增强平台**：通过独立服务方式扩展 RAGFlow 功能
+- **企业级知识管理系统**：提供完整的用户权限、团队协作、数据安全保障
+
+### 🏗️ 系统架构
+
+KnowFlow 采用分布式微服务架构，通过独立的服务组件为 RAGFlow 提供增强功能：
+
+```mermaid
+graph TB
+    subgraph "用户端"
+        User[👤 用户]
+        Browser[🌐 浏览器]
+        User --> Browser
+    end
+
+    subgraph "RAGFlow 生态系统"
+        direction TB
+        subgraph "RAGFlow 核心服务"
+            RF_Frontend[RAGFlow 前端<br/>端口: 80/443]
+            RF_Backend[RAGFlow 后端<br/>端口: 9380]
+            RF_DB[(RAGFlow 数据库<br/>MySQL)]
+            RF_ES[(Elasticsearch<br/>端口: 9200)]
+            RF_Minio[(MinIO 存储<br/>端口: 9000)]
+            RF_Redis[(Redis 缓存<br/>端口: 6379)]
+        end
+        
+        subgraph "KnowFlow 扩展服务"
+            direction TB
+            KF_Backend[KnowFlow 后端<br/>端口: 5000<br/>• 用户管理<br/>• 团队协作<br/>• MinerU集成<br/>• API Token管理]
+            KF_Gotenberg[Gotenberg 文档转换<br/>端口: 3000<br/>• PPT/Word/Excel转PDF<br/>• 文档格式标准化]
+            
+            subgraph "MinerU 解析引擎"
+                MinerU_API[MinerU API 服务<br/>端口: 8888<br/>• OCR 文字识别<br/>• 图像提取<br/>• 文档结构分析]
+                MinerU_VLM[VLM 视觉模型<br/>端口: 30000<br/>• 图像理解<br/>• 多模态分析]
+            end
+        end
+    end
+
+    %% 用户访问流程
+    Browser --> RF_Frontend
+    
+    %% RAGFlow 内部服务通信
+    RF_Frontend --> RF_Backend
+    RF_Backend --> RF_DB
+    RF_Backend --> RF_ES
+    RF_Backend --> RF_Minio
+    RF_Backend --> RF_Redis
+    
+    %% RAGFlow 与 KnowFlow 集成
+    RF_Frontend -.->|API 调用| KF_Backend
+    RF_Backend -.->|共享数据库| RF_DB
+    
+    %% KnowFlow 内部服务通信
+    KF_Backend --> KF_Gotenberg
+    KF_Backend --> MinerU_API
+    MinerU_API --> MinerU_VLM
+    
+    %% KnowFlow 与 RAGFlow 数据层集成
+    KF_Backend --> RF_DB
+    KF_Backend --> RF_ES
+    KF_Backend --> RF_Minio
+    KF_Backend --> RF_Redis
+```
+
+**架构特点：**
+- **🔌 独立服务**：KnowFlow 作为独立微服务运行，不修改 RAGFlow 核心代码
+- **🔗 API 集成**：通过 RESTful API 与 RAGFlow 前端无缝集成
+- **💾 共享数据层**：复用 RAGFlow 的数据库、存储等基础设施
+- **⚡ 高性能解析**：集成 MinerU 2.x 引擎，支持 GPU 加速
+- **📄 格式转换**：内置 Gotenberg 服务，支持多种文档格式转换
+
+### 💡 核心功能
+
+<div align="center">
+
+| 📚 **智能文档解析** | 🧠 **增强检索问答** | 👥 **企业级管理** | 🔌 **开放集成** |
+|-------------------|-------------------|------------------|----------------|
+| • MinerU2.x OCR引擎<br>• 图文混排输出<br>• 多种分块策略<br>• 20+文档格式支持 | • 精准语义检索<br>• 上下文感知问答<br>• 多模态内容理解<br>• 实时知识更新 | • 用户权限管理<br>• 团队协作空间<br>• 企业微信集成<br>• LDAP/SSO支持 | • 插件化架构<br>• API开放接口<br>• 自定义扩展<br>• 第三方系统集成 |
+
+</div>
+
+### 🌟 核心优势
 
 <div align="center">
 
 | 🌟 | **KnowFlow 优势** |
 |----|-------------------|
 | 🔌 | **插件化架构**：无缝兼容 RAGFlow 任意版本，所有增强均可热插拔，升级无忧 |
-| 🛡️ | **零入侵增强**：通过 Plugin & Patch 机制，增强 RAGFlow 而不破坏原生代码 |
+| 🏗️ | **微服务设计**：通过独立服务方式增强 RAGFlow，不修改核心代码 |
 | 🧩 | **分块策略丰富**：支持多种分块算法，检索更精准，适配多场景文档 |
-| 🏢 | **企业级特性**：MinerU2.x OCR 引擎、团队/用户/权限管理、企业微信、LDAP/SSO（开发中） |
+| 🏢 | **企业级特性**：MinerU2.x OCR 引擎、团队/用户/权限管理、企业微信、LDAP/SSO |
 | 📈 | **最佳实践集成**：持续吸收社区优质方案，助力企业高效落地 |
+| 🔧 | **简化部署**：一键安装脚本，Docker Compose 开箱即用 |
 
 </div>
 
+---
 
-## 功能介绍
+## 🚀 快速开始
 
-### 适配 RAGFlow 全新 UI
+### 方式一：Docker Compose 部署（推荐）
 
-基于 RAGFlow v0.18.0 二次开发全新 UI 页面，目前已适配 v0.19.0。
+#### 前置要求
+- Docker 20.10+ 
+- Docker Compose 2.0+
+- 至少 8GB 内存
+- 可选：NVIDIA GPU + nvidia-container-toolkit（GPU加速）
+
+#### 1. 启动 MinerU 服务
+
+选择以下两种镜像之一：
+
+**完整版（推荐）- 包含所有功能**
+```bash
+docker run --rm -d --gpus=all \
+  --shm-size=32g \
+  -p 8888:8888 -p 30000:30000 \
+  --name mineru-api \
+  zxwei/mineru-api-full:2.1.0
+```
+
+**基础版 - 仅包含基础功能**
+```bash
+docker run --rm -d --gpus=all \
+  --shm-size=32g \
+  -p 8888:8888 \
+  --name mineru-api \
+  zxwei/mineru-api:2.1.0
+```
+
+> 💡 **镜像说明：**
+> - `zxwei/mineru-api-full`：包含完整的 VLM 功能，支持所有后端类型
+> - `zxwei/mineru-api`：基础版本，主要支持 pipeline 后端
+> - 如需 GPU 加速，请确保已安装 nvidia-container-toolkit
+
+#### 2. MinerU 服务地址配置
+
+在 `/knowflow/server/services/config/settings.yaml` 配置文件中，配置 MinerU 服务地址以及解析模式:
+
+```bash
+  fastapi:
+    # FastAPI 服务地址
+    # 本地开发: http://localhost:8888
+    # Docker部署: http://host.docker.internal:8888 (Docker Desktop)
+    #           或 http://宿主机IP:8888 (Linux Docker)
+    url: "http://宿主机IP:8888"
+    
+    # HTTP 请求超时时间（秒）
+    timeout: 30000
+
+
+   # VLM 后端配置
+  vlm:
+    sglang:
+      # SGLang 服务器地址（vlm-sglang-client 后端需要）
+      # Docker部署时同样需要使用宿主机IP或容器网络地址
+      server_url: "http://宿主机IP:30000"
+```
+
+
+#### 3. 启动容器，开始使用
+
+进入到 `docker` 目录执行（此步骤和 RAGFlow 官方一致）：
+
+```bash
+docker compose up -d
+```
+
+访问地址：`http://服务器IP:80`，进入 KnowFlow 首页
+
+### 方式二：源码部署
+
+#### 前置要求
+- Python 3.9+
+- Node.js 16+ 
+- pnpm
+- MinerU 服务（参考上述步骤）
+
+#### KnowFlow 后端部署
+
+1. **安装 Python 依赖**
+```bash
+cd knowflow/server
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. **启动文件转换服务（可选）**
+```bash
+# 支持 PDF 以外文件格式需要启动此服务
+docker run -d -p 3000:3000 gotenberg/gotenberg:8
+```
+
+3. **执行 install 脚本，初始化环境变量**
+
+```bash
+cd knowflow/
+./scripts/install.sh --local
+```
+
+4. **启动 knowflow 后端服务**
+```bash
+python3 app.py
+```
+
+#### RAGFlow 后端部署
+
+1. **修改 docker/entrypoint.sh 文件**
+```bash
+# 注释掉 nginx 行
+# /usr/sbin/nginx
+```
+
+2. **激活 Python 虚拟环境**
+```bash
+source .venv/bin/activate
+export PYTHONPATH=$(pwd)
+```
+
+3. **配置 HuggingFace 镜像（可选）**
+```bash
+# 如果无法访问 HuggingFace，设置镜像站点
+export HF_ENDPOINT=https://hf-mirror.com
+```
+
+4. **检查配置文件**
+确保 `conf/service_conf.yaml` 中所有主机和端口配置正确。
+
+5. **启动后端服务**
+```bash
+# 设置内存分配器和启动任务执行器
+JEMALLOC_PATH=$(pkg-config --variable=libdir jemalloc)/libjemalloc.so
+LD_PRELOAD=$JEMALLOC_PATH python rag/svr/task_executor.py 1
+
+# 启动 API 服务器
+python api/ragflow_server.py
+```
+
+#### RAGFlow 前端部署
+
+1. **安装 Node.js 依赖**
+```bash
+cd web
+pnpm install
+```
+
+2. **启动开发服务器**
+```bash
+pnpm dev
+```
+
+浏览器访问启动后的地址，即可进入系统。
+
+---
+
+## 📋 功能详解
+
+### 🎨 全新 UI 界面
+
+基于 RAGFlow v0.19.0 二次开发，提供更加现代化的用户界面：
 
 <div align="center">
-  <img src="assets/ui_1.png" alt="KnowFlow 企业知识库">
+  <img src="knowflow/assets/ui_1.png" alt="KnowFlow 主界面">
 </div>
 
 <div align="center">
-  <img src="assets/ui_2.png" alt="KnowFlow 企业知识库">
+  <img src="knowflow/assets/ui_2.png" alt="KnowFlow 知识库界面">
 </div>
 
-### 用户后台管理系统
+### 👥 用户后台管理系统
 
-参考 [ragflow-plus](https://github.com/zstar1003/ragflow-plus/)
+参考 [ragflow-plus](https://github.com/zstar1003/ragflow-plus/) 实现的企业级用户管理：
 
 <div align="center">
-  <img src="assets/user-setting.png"  alt="用户后台管理系统">
+  <img src="knowflow/assets/user-setting.png" alt="用户后台管理系统">
 </div>
 
-移除原登陆页用户注册的通道，搭建用户后台管理系统，可对用户进行管理，包括用户管理、团队管理、用户模型配置管理等功能。
+**核心特性：**
+- 移除前端用户注册通道，管理员统一管理用户
+- 用户管理、团队管理、模型配置管理
+- 新用户自动加入创建时间最早用户的团队
+- 继承团队模型配置，降低配置复杂度
 
-特点：新建用户时，新用户会自动加入创建时间最早用户的团队，并默认采取和最早用户相同的模型配置。
+### 📄 图文混排输出
 
-### 图文混排输出
+**支持格式：** PPT、PNG、Word、DOC、Excel 等 20+ 种常见文件格式
 
-1. 支持市面上常见的文件格式，如 ppt/png/word/doc/excel/...等等
-2. 保持和官方 markdown **完全一致**的分块规则，共提供了三种分块策略:文档结构分块、按标题分块、RAGFlow 原分块
-3. 无缝对接 RAGFlow 知识库系统，文档自动解析和分块
+**分块策略：**
+1. **文档结构分块**：基于文档原生结构进行智能分块
+2. **按标题分块**：根据标题层级自动划分内容块
+3. **RAGFlow 原分块**：保持与官方完全一致的分块规则
 
 <div align="center">
-  <img src="assets/mulcontent.png"  alt="图文混排">
+  <img src="knowflow/assets/mulcontent.png" alt="图文混排示例">
 </div>
 
-### 支持企业微信应用
+### 💼 企业微信集成
 
-支持企业微信应用，可将企业微信应用作为聊天机器人，使用企业微信应用进行聊天。具体使用方式参照  `server/services/knowflow/README.md` 中的说明。
+支持企业微信应用，可将企业微信作为聊天机器人入口：
 
 <div align="center">
-  <img src="assets/wecom.jpg" style="height: 400px;" alt="企业微信应用">
+  <img src="knowflow/assets/wecom.jpg" style="height: 400px;" alt="企业微信应用">
 </div>
 
-## 使用方式
+详细配置方式参照 `server/services/knowflow/README.md`
 
+---
 
-### 0. MinerU 本地调试（开发环境）
+## ⚙️ 高级配置
 
-如果您需要在本地环境进行开发调试，可以直接运行 MinerU 服务：
+### 🔧 MinerU 本地调试（开发环境）
+
+如果需要在本地环境进行开发调试：
 
 ```bash
 # 1. 安装 Python 依赖（注意：zsh 需要用引号包围方括号）
@@ -96,8 +351,6 @@ python app.py
 
 **配置 settings.yaml：**
 
-使用本地 MinerU 服务时，需要修改 `server/services/config/settings.yaml` 中的服务地址：
-
 ```yaml
 mineru:
   fastapi:
@@ -110,163 +363,83 @@ mineru:
       server_url: "http://localhost:30000"
 ```
 
-> 💡 **提示：** 本地调试模式适合开发环境，生产环境建议使用Docker方式部署
+### 🐳 通过 RAGFlow 网络连接（推荐）
 
-### 1. 使用 Docker Compose 运行
+如果您已经部署了 RAGFlow 服务，可以通过连接 RAGFlow 的 Docker 网络来实现更稳定的网络连接：
 
-1. 启动 MinerU 服务
+**修改 docker-compose.yml 文件：**
 
-   选择以下两种镜像之一：
+```yaml
+services:
+  frontend:
+    container_name: knowflow-frontend
+    image: zxwei/knowflow-web:v0.7.0
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    networks:
+      - management_network
+      - ragflow_ragflow  # 连接到 RAGFlow 网络
 
-   **完整版（推荐）- 包含所有功能**
-   ```bash
-   docker run --rm -d --gpus=all \
-     --shm-size=32g \
-     -p 8888:8888 -p 30000:30000 \
-     --name mineru-api \
-     zxwei/mineru-api-full:2.1.0
-   ```
+  backend:
+    container_name: knowflow-backend
+    image: zxwei/knowflow-server:v1.1.3
+    ports:
+      - "5000:5000"
+    networks:
+      - management_network
+      - ragflow_ragflow  # 连接到 RAGFlow 网络
 
-   **基础版 - 仅包含基础功能**
-   ```bash
-   docker run --rm -d --gpus=all \
-     --shm-size=32g \
-     -p 8888:8888 \
-     --name mineru-api \
-     zxwei/mineru-api:2.1.0
-   ```
+networks:
+  management_network:
+    driver: bridge
+  ragflow_ragflow:
+    external: true  # 使用外部的 RAGFlow 网络
+```
 
-   > 💡 **镜像说明：**
-   > - `zxwei/mineru-api-full`：包含完整的 VLM 功能，支持所有后端类型
-   > - `zxwei/mineru-api`：基础版本，主要支持 pipeline 后端
-   > - `server/services/config/settings.yaml` 可以配置选择 MinerU 模式、配置服务地址
-   > - 如需 GPU 加速，请确保已安装 nvidia-container-toolkit
+**配置 .env 文件：**
 
-
-2. 执行安装脚本，自动生成配置
-
-   ```bash
-   ./scripts/install.sh
-   ```
-
-   > 💡 **自动配置功能：**
-   > - 脚本会自动检测本机IP地址
-   > - 自动创建 `.env` 配置文件（如果不存在）
-   > - 如果 `.env` 文件已存在，会提供选项：保留现有配置或重新生成
-
-3. 完善 `.env` 文件配置
-
-   安装脚本会自动创建 `.env` 文件模板，您只需要填写必要信息：
-
-   ```bash
-   # RAGFlow 服务地址 (必须手动填写)
-   RAGFLOW_BASE_URL=http://检测到的IP:实际端口号
-   ```
-
-   > 💡 **提示：** 其他配置项（如HOST_IP、ES_HOST等）已由脚本自动填写
-
-4. 启动容器，开始愉快之旅
-
-   ```bash
-   docker compose up -d
-   ```
-
-   访问地址：`服务器ip:8081`，进入到管理界面
-
-### 2. 源码运行
-
-参照 Docker Compose 使用方式的前面步骤，确保 MinerU 服务已启动。
-
-**启动后端：**
-
-1. 打开后端程序 `management/server`，安装依赖
-
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
-
-2. 开启文件格式转化服务（可选，支持 PDF 以外文件格式需要开启）
-
-   ```bash
-   docker run -d -p 3000:3000 gotenberg/gotenberg:8
-   ```
-
-3. 启动后端
-
-   ```bash
-   python3 app.py
-   ```
-
-**启动前端：**
-
-1. 打开前端程序 `management\web`，安装依赖
-
-   ```bash
-   pnpm i
-   ```
-
-2. 启动前端程序
-
-   ```bash
-   pnpm dev
-   ```
-
-浏览器访问启动后的地址，即可进入系统。
-
-> 💡 **提示：** **图文混排功能**，聊天助手的提示词很重要，配置不正确会无法显示图片。模板如下：<br>
-
-> 请参考{knowledge}内容回答用户问题。<br>
-> 如果知识库内容包含图片，请在回答中包含图片URL。<br>
-> 注意这个 html 格式的 URL 是来自知识库本身，URL 不能做任何改动。<br>
-> 请确保回答简洁、专业，将图片自然地融入回答内容中。
+```bash
+# 通过 RAGFlow 网络连接的服务地址
+ES_HOST=ragflow-es-01
+DB_HOST=ragflow-mysql
+MINIO_HOST=ragflow-minio
+REDIS_HOST=ragflow-redis
+```
 
 ---
 
-### RAGFlow UI（无 RAGFlow UI 更新需要可忽略）
-
-参照 `ragflow-ui/README.md`
-
-
-## 编译 Docker（无编译需要可忽略）
+## 🔧 编译 Docker（开发者）
 
 ```bash
+# 后端镜像
 docker buildx build --platform linux/amd64 --target backend -t zxwei/knowflow-server:v0.3.0 --push .
 
+# 前端镜像
 docker buildx build --platform linux/amd64 --target frontend -t zxwei/knowflow-web:v0.3.0 --push .
 ```
 
-## TODO
+---
+
+## 📋 TODO 清单
 
 - [x] 支持更多文档格式的 MinerU 解析
 - [x] 增强 MarkDown 文件的分块规则
 - [x] 优化 Excel 文件分块
 - [x] MinerU 2.0 接入
 - [x] RAGFlow 前端 UI 源码开源
+- [x] API Token 自动生成机制
+- [ ] LDAP/SSO 单点登录集成
+- [ ] 多租户数据隔离
+- [ ] 知识库版本管理
+- [ ] 文档审批工作流
 
+---
 
-## 交流群
+## ❓ 常见问题
 
-如果有其它需求或问题建议，可加入交流群进行讨论。
-
-如需加群，加我微信 skycode007，备注"加群"即可。
-
-## 鸣谢
-
-本项目基于以下开源项目开发：
-
-- [ragflow](https://github.com/infiniflow/ragflow)
-- [v3-admin-vite](https://github.com/un-pany/v3-admin-vite)
-- [ragflow-plus](https://github.com/zstar1003/ragflow-plus/)
-
-## 更新信息获取
-
-目前该项目仍在持续更新中，更新日志会在我的微信公众号[KnowFlow 企业知识库]上发布，欢迎关注。
-
-## 常见问题
-
-### 1. 如何选择 MinerU 镜像版本
+### 1. 如何选择 MinerU 镜像版本？
 
 **zxwei/mineru-api-full（推荐）：**
 - 包含完整的 VLM 功能
@@ -278,10 +451,9 @@ docker buildx build --platform linux/amd64 --target frontend -t zxwei/knowflow-w
 - 主要支持 pipeline 后端
 - 适合基础文档解析需求
 
-### 2. 如何给 MinerU 进行 GPU 加速
+### 2. 如何启用 GPU 加速？
 
-1）安装 nvidia-container-toolkit
-
+1. **安装 nvidia-container-toolkit**
 ```bash
 # 添加源
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
@@ -297,128 +469,68 @@ sudo apt-get install -y nvidia-container-toolkit
 sudo systemctl restart docker
 ```
 
-2）启动 MinerU 容器时确保包含 `--gpus=all` 参数（如上面的示例命令）
+2. **启动容器时使用 GPU**
+确保启动命令包含 `--gpus=all` 参数
 
-3）在 settings.yaml 中配置使用 GPU 后端：
-
+3. **配置 GPU 后端**
 ```yaml
 mineru:
   default_backend: "vlm-sglang-client"  # 使用 VLM 后端
 ```
 
-### 3. 容器网络配置
+### 3. 常见错误处理
 
-如果 KnowFlow server 也运行在容器中，需要正确配置网络地址：
+**端口冲突：**
+- MinerU 服务：8888, 30000
+- KnowFlow 前端：8081
+- 后端服务：5000
+- 确保端口未被占用
 
-- **Docker Desktop**：使用 `http://host.docker.internal:8888`
-- **Linux Docker**：使用宿主机IP，如 `http://192.168.1.100:8888`
-- **Docker Compose**：使用服务名，如 `http://mineru-api:8888`
+**内存不足：**
+增加 Docker 内存限制或调整 `--shm-size` 参数
 
-详细配置参考 `DOCKER_NETWORK_GUIDE.md`
+**网络连接问题：**
+检查防火墙设置和容器网络配置
 
-### 4. 常见错误处理
+**图片显示问题：**
+确保聊天助手提示词包含图片显示指令：
 
-1）**端口冲突**：
-   - MinerU 服务使用端口 8888 和 30000
-   - KnowFlow 前端使用端口 8081
-   - 后端服务使用端口 5000
-   - 确保这些端口未被其他服务占用
+> 请参考{knowledge}内容回答用户问题。<br>
+> 如果知识库内容包含图片，请在回答中包含图片URL。<br>
+> 注意这个 html 格式的 URL 是来自知识库本身，URL 不能做任何改动。<br>
+> 请确保回答简洁、专业，将图片自然地融入回答内容中。
 
-2）**内存不足**：增加 Docker 内存限制或调整 `--shm-size` 参数
+---
 
-3）**GPU 不可用**：检查 nvidia-container-toolkit 安装和 GPU 驱动
+## 🤝 社区与支持
 
-4）**网络连接问题**：检查防火墙设置和容器网络配置
+### 💬 交流群
 
-5）**通过 RAGFlow 网络连接（推荐）**：
+如有需求或问题建议，可加入交流群讨论。
 
-   如果您已经部署了 RAGFlow 服务，可以通过连接 RAGFlow 的 Docker 网络来实现更稳定的网络连接（适用于不方便开公网端口权限用户）。
+加微信 `skycode007`，备注"加群"即可。
 
-   **配置步骤：**
+### 📢 更新信息
 
-   1. **修改 docker-compose.yml 文件**：
-   
-   ```yaml
-   services:
-     frontend:
-       container_name: knowflow-frontend
-       image: zxwei/knowflow-web:v0.7.0
-       ports:
-         - "8081:80"
-       depends_on:
-         - backend
-       environment:
-         - API_BASE_URL=/api
-       networks:
-         - management_network
-         - ragflow_ragflow  # 连接到 RAGFlow 网络
+项目持续更新中，更新日志会在微信公众号 **[KnowFlow 企业知识库]** 发布，欢迎关注。
 
-     backend:
-       container_name: knowflow-backend
-       image: zxwei/knowflow-server:v1.1.3
-       ports:
-         - "5000:5000"
-       environment:
-         - RAGFLOW_BASE_URL=${RAGFLOW_BASE_URL}
-         - DB_HOST=${DB_HOST}
-         - MYSQL_PORT=3306 
-         - MINIO_HOST=${MINIO_HOST}
-         - ES_HOST=${ES_HOST}
-         - ES_PORT=${ES_PORT}
-         # ... 其他环境变量
-       volumes:
-         - ./server/services/config:/app/services/config:ro
-       extra_hosts:
-         - "host.docker.internal:host-gateway"
-       networks:
-         - management_network
-         - ragflow_ragflow  # 连接到 RAGFlow 网络
+### 🙏 鸣谢
 
-     gotenberg:
-       image: gotenberg/gotenberg:8
-       ports:
-         - "3000:3000"
-       networks:
-         - management_network
-         - ragflow_ragflow  # 连接到 RAGFlow 网络
+本项目基于以下开源项目开发：
 
-   networks:
-     management_network:
-       driver: bridge
-     ragflow_ragflow:
-       external: true  # 使用外部的 RAGFlow 网络
-   ```
+- [ragflow](https://github.com/infiniflow/ragflow) - 核心 RAG 框架
+- [v3-admin-vite](https://github.com/un-pany/v3-admin-vite) - 管理后台框架
+- [ragflow-plus](https://github.com/zstar1003/ragflow-plus/) - 用户管理参考
 
-   2. **配置 .env 文件**：
-   
-   ```bash
-   # RAGFlow API 配置
-   RAGFLOW_BASE_URL=http://8.134.177.47:15002
+---
 
-   # 通过 RAGFlow 网络连接的服务地址
-   ES_HOST=ragflow-es-01
-   ES_PORT=9200
-   DB_HOST=ragflow-mysql
-   MINIO_HOST=ragflow-minio
-   REDIS_HOST=ragflow-redis
-   ```
+## 📊 Star History
 
-   **优势：**
-   - 避免网络地址配置问题
-   - 直接使用 RAGFlow 的服务容器名进行通信
-   - 更稳定的容器间网络连接
-   - 减少端口暴露和安全风险
+[![Star History Chart](https://api.star-history.com/svg?repos=weizxfree/KnowFlow&type=Date)](https://star-history.com/#weizxfree/KnowFlow&Date)
 
-   **注意事项：**
-   - 确保 RAGFlow 服务已正常运行
-   - RAGFlow 网络名称可能不同，请根据实际情况调整（通常为 `ragflow_ragflow` 或 `ragflow_default`）
-   - 可通过 `docker network ls` 查看可用的网络
+---
 
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=weizxfree/KnowFlow&type=Date)](https://www.star-history.com/#weizxfree/KnowFlow&Date)
-
-
-
+<div align="center">
+  <p>⭐ 如果这个项目对您有帮助，请不要忘记点个 Star！</p>
+  <p>🚀 让我们一起构建更好的企业知识库解决方案！</p>
+</div>

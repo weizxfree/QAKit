@@ -1,396 +1,513 @@
 <div align="center">
-<a href="https://demo.ragflow.io/">
-<img src="web/src/assets/logo-with-text.png" width="520" alt="ragflow logo">
-</a>
+  <img src="knowflow/assets/logo.png" alt="KnowFlow 企业知识库" width="30%">
 </div>
 
-<p align="center">
-  <a href="./README.md">English</a> |
-  <a href="./README_zh.md">简体中文</a> |
-  <a href="./README_tzh.md">繁体中文</a> |
-  <a href="./README_ja.md">日本語</a> |
-  <a href="./README_ko.md">한국어</a> |
-  <a href="./README_id.md">Bahasa Indonesia</a> |
-  <a href="/README_pt_br.md">Português (Brasil)</a>
-</p>
-
-<p align="center">
-    <a href="https://x.com/intent/follow?screen_name=infiniflowai" target="_blank">
-        <img src="https://img.shields.io/twitter/follow/infiniflow?logo=X&color=%20%23f5f5f5" alt="follow on X(Twitter)">
-    </a>
-    <a href="https://demo.ragflow.io" target="_blank">
-        <img alt="Static Badge" src="https://img.shields.io/badge/Online-Demo-4e6b99">
-    </a>
-    <a href="https://hub.docker.com/r/infiniflow/ragflow" target="_blank">
-        <img src="https://img.shields.io/badge/docker_pull-ragflow:v0.19.0-brightgreen" alt="docker pull infiniflow/ragflow:v0.19.0">
-    </a>
-    <a href="https://github.com/infiniflow/ragflow/releases/latest">
-        <img src="https://img.shields.io/github/v/release/infiniflow/ragflow?color=blue&label=Latest%20Release" alt="Latest Release">
-    </a>
-    <a href="https://github.com/infiniflow/ragflow/blob/main/LICENSE">
-        <img height="21" src="https://img.shields.io/badge/License-Apache--2.0-ffffff?labelColor=d4eaf7&color=2e6cc4" alt="license">
-    </a>
-</p>
-
-<h4 align="center">
-  <a href="https://ragflow.io/docs/dev/">Document</a> |
-  <a href="https://github.com/infiniflow/ragflow/issues/4214">Roadmap</a> |
-  <a href="https://twitter.com/infiniflowai">Twitter</a> |
-  <a href="https://discord.gg/NjYzJD3GM3">Discord</a> |
-  <a href="https://demo.ragflow.io">Demo</a>
-</h4>
-
-<details open>
-<summary><b>📕 Table of Contents</b></summary>
-
-- 💡 [What is RAGFlow?](#-what-is-ragflow)
-- 🎮 [Demo](#-demo)
-- 📌 [Latest Updates](#-latest-updates)
-- 🌟 [Key Features](#-key-features)
-- 🔎 [System Architecture](#-system-architecture)
-- 🎬 [Get Started](#-get-started)
-- 🔧 [Configurations](#-configurations)
-- 🔧 [Build a docker image without embedding models](#-build-a-docker-image-without-embedding-models)
-- 🔧 [Build a docker image including embedding models](#-build-a-docker-image-including-embedding-models)
-- 🔨 [Launch service from source for development](#-launch-service-from-source-for-development)
-- 📚 [Documentation](#-documentation)
-- 📜 [Roadmap](#-roadmap)
-- 🏄 [Community](#-community)
-- 🙌 [Contributing](#-contributing)
-
-</details>
-
-## 💡 What is RAGFlow?
-
-[RAGFlow](https://ragflow.io/) is an open-source RAG (Retrieval-Augmented Generation) engine based on deep document
-understanding. It offers a streamlined RAG workflow for businesses of any scale, combining LLM (Large Language Models)
-to provide truthful question-answering capabilities, backed by well-founded citations from various complex formatted
-data.
-
-## 🎮 Demo
-
-Try our demo at [https://demo.ragflow.io](https://demo.ragflow.io).
-
-<div align="center" style="margin-top:20px;margin-bottom:20px;">
-<img src="https://github.com/infiniflow/ragflow/assets/7248/2f6baa3e-1092-4f11-866d-36f6a9d075e5" width="1200"/>
-<img src="https://github.com/user-attachments/assets/504bbbf1-c9f7-4d83-8cc5-e9cb63c26db6" width="1200"/>
-</div>
-
-## 🔥 Latest Updates
-
-- 2025-03-19 Supports using a multi-modal model to make sense of images within PDF or DOCX files.
-- 2025-02-28 Combined with Internet search (Tavily), supports reasoning like Deep Research for any LLMs.
-- 2025-01-26 Optimizes knowledge graph extraction and application, offering various configuration options.
-- 2024-12-18 Upgrades Document Layout Analysis model in DeepDoc.
-- 2024-11-01 Adds keyword extraction and related question generation to the parsed chunks to improve the accuracy of retrieval.
-- 2024-08-22 Support text to SQL statements through RAG.
-
-## 🎉 Stay Tuned
-
-⭐️ Star our repository to stay up-to-date with exciting new features and improvements! Get instant notifications for new
-releases! 🌟
-
-<div align="center" style="margin-top:20px;margin-bottom:20px;">
-<img src="https://github.com/user-attachments/assets/18c9707e-b8aa-4caf-a154-037089c105ba" width="1200"/>
-</div>
-
-## 🌟 Key Features
-
-### 🍭 **"Quality in, quality out"**
-
-- [Deep document understanding](./deepdoc/README.md)-based knowledge extraction from unstructured data with complicated
-  formats.
-- Finds "needle in a data haystack" of literally unlimited tokens.
-
-### 🍱 **Template-based chunking**
-
-- Intelligent and explainable.
-- Plenty of template options to choose from.
-
-### 🌱 **Grounded citations with reduced hallucinations**
-
-- Visualization of text chunking to allow human intervention.
-- Quick view of the key references and traceable citations to support grounded answers.
-
-### 🍔 **Compatibility with heterogeneous data sources**
-
-- Supports Word, slides, excel, txt, images, scanned copies, structured data, web pages, and more.
-
-### 🛀 **Automated and effortless RAG workflow**
-
-- Streamlined RAG orchestration catered to both personal and large businesses.
-- Configurable LLMs as well as embedding models.
-- Multiple recall paired with fused re-ranking.
-- Intuitive APIs for seamless integration with business.
-
-## 🔎 System Architecture
-
-<div align="center" style="margin-top:20px;margin-bottom:20px;">
-<img src="https://github.com/infiniflow/ragflow/assets/12318111/d6ac5664-c237-4200-a7c2-a4a00691b485" width="1000"/>
-</div>
-
-## 🎬 Get Started
-
-### 📝 Prerequisites
-
-- CPU >= 4 cores
-- RAM >= 16 GB
-- Disk >= 50 GB
-- Docker >= 24.0.0 & Docker Compose >= v2.26.1
-- [gVisor](https://gvisor.dev/docs/user_guide/install/): Required only if you intend to use the code executor (sandbox) feature of RAGFlow.
-
-> [!TIP]
-> If you have not installed Docker on your local machine (Windows, Mac, or Linux), see [Install Docker Engine](https://docs.docker.com/engine/install/).
-
-### 🚀 Start up the server
-
-1. Ensure `vm.max_map_count` >= 262144:
-
-   > To check the value of `vm.max_map_count`:
-   >
-   > ```bash
-   > $ sysctl vm.max_map_count
-   > ```
-   >
-   > Reset `vm.max_map_count` to a value at least 262144 if it is not.
-   >
-   > ```bash
-   > # In this case, we set it to 262144:
-   > $ sudo sysctl -w vm.max_map_count=262144
-   > ```
-   >
-   > This change will be reset after a system reboot. To ensure your change remains permanent, add or update the
-   > `vm.max_map_count` value in **/etc/sysctl.conf** accordingly:
-   >
-   > ```bash
-   > vm.max_map_count=262144
-   > ```
-
-2. Clone the repo:
-
-   ```bash
-   $ git clone https://github.com/infiniflow/ragflow.git
-   ```
-
-3. Start up the server using the pre-built Docker images:
-
-> [!CAUTION]
-> All Docker images are built for x86 platforms. We don't currently offer Docker images for ARM64.
-> If you are on an ARM64 platform, follow [this guide](https://ragflow.io/docs/dev/build_docker_image) to build a Docker image compatible with your system.
-
-   > The command below downloads the `v0.19.0-slim` edition of the RAGFlow Docker image. See the following table for descriptions of different RAGFlow editions. To download a RAGFlow edition different from `v0.19.0-slim`, update the `RAGFLOW_IMAGE` variable accordingly in **docker/.env** before using `docker compose` to start the server. For example: set `RAGFLOW_IMAGE=infiniflow/ragflow:v0.19.0` for the full edition `v0.19.0`.
-
-   ```bash
-   $ cd ragflow/docker
-   # Use CPU for embedding and DeepDoc tasks:
-   $ docker compose -f docker-compose.yml up -d
-
-   # To use GPU to accelerate embedding and DeepDoc tasks:
-   # docker compose -f docker-compose-gpu.yml up -d
-   ```
-
-   | RAGFlow image tag | Image size (GB) | Has embedding models? | Stable?                  |
-   |-------------------|-----------------|-----------------------|--------------------------|
-   | v0.19.0           | &approx;9       | :heavy_check_mark:    | Stable release           |
-   | v0.19.0-slim      | &approx;2       | ❌                   | Stable release            |
-   | nightly           | &approx;9       | :heavy_check_mark:    | _Unstable_ nightly build |
-   | nightly-slim      | &approx;2       | ❌                   | _Unstable_ nightly build  |
-
-4. Check the server status after having the server up and running:
-
-   ```bash
-   $ docker logs -f ragflow-server
-   ```
-
-   _The following output confirms a successful launch of the system:_
-
-   ```bash
-
-         ____   ___    ______ ______ __
-        / __ \ /   |  / ____// ____// /____  _      __
-       / /_/ // /| | / / __ / /_   / // __ \| | /| / /
-      / _, _// ___ |/ /_/ // __/  / // /_/ /| |/ |/ /
-     /_/ |_|/_/  |_|\____//_/    /_/ \____/ |__/|__/
-
-    * Running on all addresses (0.0.0.0)
-   ```
-
-   > If you skip this confirmation step and directly log in to RAGFlow, your browser may prompt a `network anormal`
-   > error because, at that moment, your RAGFlow may not be fully initialized.
-
-5. In your web browser, enter the IP address of your server and log in to RAGFlow.
-   > With the default settings, you only need to enter `http://IP_OF_YOUR_MACHINE` (**sans** port number) as the default
-   > HTTP serving port `80` can be omitted when using the default configurations.
-6. In [service_conf.yaml.template](./docker/service_conf.yaml.template), select the desired LLM factory in `user_default_llm` and update
-   the `API_KEY` field with the corresponding API key.
-
-   > See [llm_api_key_setup](https://ragflow.io/docs/dev/llm_api_key_setup) for more information.
-
-   _The show is on!_
-
-## 🔧 Configurations
-
-When it comes to system configurations, you will need to manage the following files:
-
-- [.env](./docker/.env): Keeps the fundamental setups for the system, such as `SVR_HTTP_PORT`, `MYSQL_PASSWORD`, and
-  `MINIO_PASSWORD`.
-- [service_conf.yaml.template](./docker/service_conf.yaml.template): Configures the back-end services. The environment variables in this file will be automatically populated when the Docker container starts. Any environment variables set within the Docker container will be available for use, allowing you to customize service behavior based on the deployment environment.
-- [docker-compose.yml](./docker/docker-compose.yml): The system relies on [docker-compose.yml](./docker/docker-compose.yml) to start up.
-
-> The [./docker/README](./docker/README.md) file provides a detailed description of the environment settings and service
-> configurations which can be used as `${ENV_VARS}` in the [service_conf.yaml.template](./docker/service_conf.yaml.template) file.
-
-To update the default HTTP serving port (80), go to [docker-compose.yml](./docker/docker-compose.yml) and change `80:80`
-to `<YOUR_SERVING_PORT>:80`.
-
-Updates to the above configurations require a reboot of all containers to take effect:
-
-> ```bash
-> $ docker compose -f docker-compose.yml up -d
-> ```
-
-### Switch doc engine from Elasticsearch to Infinity
-
-RAGFlow uses Elasticsearch by default for storing full text and vectors. To switch to [Infinity](https://github.com/infiniflow/infinity/), follow these steps:
-
-1. Stop all running containers:
-
-   ```bash
-   $ docker compose -f docker/docker-compose.yml down -v
-   ```
-
-> [!WARNING]
-> `-v` will delete the docker container volumes, and the existing data will be cleared.
-
-2. Set `DOC_ENGINE` in **docker/.env** to `infinity`.
-
-3. Start the containers:
-
-   ```bash
-   $ docker compose -f docker-compose.yml up -d
-   ```
-
-> [!WARNING]
-> Switching to Infinity on a Linux/arm64 machine is not yet officially supported.
-
-## 🔧 Build a Docker image without embedding models
-
-This image is approximately 2 GB in size and relies on external LLM and embedding services.
-
-```bash
-git clone https://github.com/infiniflow/ragflow.git
-cd ragflow/
-docker build --platform linux/amd64 --build-arg LIGHTEN=1 -f Dockerfile -t infiniflow/ragflow:nightly-slim .
+# KnowFlow - 企业级智能知识库解决方案
+
+[![Star History Chart](https://api.star-history.com/svg?repos=weizxfree/KnowFlow&type=Date)](https://star-history.com/#weizxfree/KnowFlow&Date)
+
+🌐 **官方网站**: [https://weizxfree.github.io/KnowFlowSite/](https://weizxfree.github.io/KnowFlowSite/)
+
+📺 **B站视频**: [https://www.bilibili.com/video/BV1Vfg8zDEUf/](https://www.bilibili.com/video/BV1Vfg8zDEUf/)
+
+---
+
+## 🚀 什么是 KnowFlow
+
+**KnowFlow** 是一个基于 RAGFlow 的企业级开源知识库解决方案，专注于为企业提供真正落地的最后一公里服务。我们持续兼容 RAGFlow 官方版本，同时将社区最佳实践整合进来，为企业知识管理提供更加完善的解决方案。
+
+### 🎯 产品定位
+
+- **RAGFlow 企业落地的最后一公里**：解决从开源到生产的关键差距
+- **插件化增强平台**：通过独立服务方式扩展 RAGFlow 功能
+- **企业级知识管理系统**：提供完整的用户权限、团队协作、数据安全保障
+
+### 🏗️ 系统架构
+
+KnowFlow 采用分布式微服务架构，通过独立的服务组件为 RAGFlow 提供增强功能：
+
+```mermaid
+graph TB
+    subgraph "用户端"
+        User[👤 用户]
+        Browser[🌐 浏览器]
+        User --> Browser
+    end
+
+    subgraph "RAGFlow 生态系统"
+        direction TB
+        subgraph "RAGFlow 核心服务"
+            RF_Frontend[RAGFlow 前端<br/>端口: 80/443]
+            RF_Backend[RAGFlow 后端<br/>端口: 9380]
+            RF_DB[(RAGFlow 数据库<br/>MySQL)]
+            RF_ES[(Elasticsearch<br/>端口: 9200)]
+            RF_Minio[(MinIO 存储<br/>端口: 9000)]
+            RF_Redis[(Redis 缓存<br/>端口: 6379)]
+        end
+        
+        subgraph "KnowFlow 扩展服务"
+            direction TB
+            KF_Backend[KnowFlow 后端<br/>端口: 5000<br/>• 用户管理<br/>• 团队协作<br/>• MinerU集成<br/>• API Token管理]
+            KF_Gotenberg[Gotenberg 文档转换<br/>端口: 3000<br/>• PPT/Word/Excel转PDF<br/>• 文档格式标准化]
+            
+            subgraph "MinerU 解析引擎"
+                MinerU_API[MinerU API 服务<br/>端口: 8888<br/>• OCR 文字识别<br/>• 图像提取<br/>• 文档结构分析]
+                MinerU_VLM[VLM 视觉模型<br/>端口: 30000<br/>• 图像理解<br/>• 多模态分析]
+            end
+        end
+    end
+
+    %% 用户访问流程
+    Browser --> RF_Frontend
+    
+    %% RAGFlow 内部服务通信
+    RF_Frontend --> RF_Backend
+    RF_Backend --> RF_DB
+    RF_Backend --> RF_ES
+    RF_Backend --> RF_Minio
+    RF_Backend --> RF_Redis
+    
+    %% RAGFlow 与 KnowFlow 集成
+    RF_Frontend -.->|API 调用| KF_Backend
+    RF_Backend -.->|共享数据库| RF_DB
+    
+    %% KnowFlow 内部服务通信
+    KF_Backend --> KF_Gotenberg
+    KF_Backend --> MinerU_API
+    MinerU_API --> MinerU_VLM
+    
+    %% KnowFlow 与 RAGFlow 数据层集成
+    KF_Backend --> RF_DB
+    KF_Backend --> RF_ES
+    KF_Backend --> RF_Minio
+    KF_Backend --> RF_Redis
 ```
 
-## 🔧 Build a Docker image including embedding models
+**架构特点：**
+- **🔌 独立服务**：KnowFlow 作为独立微服务运行，不修改 RAGFlow 核心代码
+- **🔗 API 集成**：通过 RESTful API 与 RAGFlow 前端无缝集成
+- **💾 共享数据层**：复用 RAGFlow 的数据库、存储等基础设施
+- **⚡ 高性能解析**：集成 MinerU 2.x 引擎，支持 GPU 加速
+- **📄 格式转换**：内置 Gotenberg 服务，支持多种文档格式转换
 
-This image is approximately 9 GB in size. As it includes embedding models, it relies on external LLM services only.
+### 💡 核心功能
 
+<div align="center">
+
+| 📚 **智能文档解析** | 🧠 **增强检索问答** | 👥 **企业级管理** | 🔌 **开放集成** |
+|-------------------|-------------------|------------------|----------------|
+| • MinerU2.x OCR引擎<br>• 图文混排输出<br>• 多种分块策略<br>• 20+文档格式支持 | • 精准语义检索<br>• 上下文感知问答<br>• 多模态内容理解<br>• 实时知识更新 | • 用户权限管理<br>• 团队协作空间<br>• 企业微信集成<br>• LDAP/SSO支持 | • 插件化架构<br>• API开放接口<br>• 自定义扩展<br>• 第三方系统集成 |
+
+</div>
+
+### 🌟 核心优势
+
+<div align="center">
+
+| 🌟 | **KnowFlow 优势** |
+|----|-------------------|
+| 🔌 | **插件化架构**：无缝兼容 RAGFlow 任意版本，所有增强均可热插拔，升级无忧 |
+| 🏗️ | **微服务设计**：通过独立服务方式增强 RAGFlow，不修改核心代码 |
+| 🧩 | **分块策略丰富**：支持多种分块算法，检索更精准，适配多场景文档 |
+| 🏢 | **企业级特性**：MinerU2.x OCR 引擎、团队/用户/权限管理、企业微信、LDAP/SSO |
+| 📈 | **最佳实践集成**：持续吸收社区优质方案，助力企业高效落地 |
+| 🔧 | **简化部署**：一键安装脚本，Docker Compose 开箱即用 |
+
+</div>
+
+---
+
+## 🚀 快速开始
+
+### 方式一：Docker Compose 部署（推荐）
+
+#### 前置要求
+- Docker 20.10+ 
+- Docker Compose 2.0+
+- 至少 8GB 内存
+- 可选：NVIDIA GPU + nvidia-container-toolkit（GPU加速）
+
+#### 1. 启动 MinerU 服务
+
+选择以下两种镜像之一：
+
+**完整版（推荐）- 包含所有功能**
 ```bash
-git clone https://github.com/infiniflow/ragflow.git
-cd ragflow/
-docker build --platform linux/amd64 -f Dockerfile -t infiniflow/ragflow:nightly .
+docker run --rm -d --gpus=all \
+  --shm-size=32g \
+  -p 8888:8888 -p 30000:30000 \
+  --name mineru-api \
+  zxwei/mineru-api-full:2.1.0
 ```
 
-## 🔨 Launch service from source for development
+**基础版 - 仅包含基础功能**
+```bash
+docker run --rm -d --gpus=all \
+  --shm-size=32g \
+  -p 8888:8888 \
+  --name mineru-api \
+  zxwei/mineru-api:2.1.0
+```
 
-1. Install uv, or skip this step if it is already installed:
+> 💡 **镜像说明：**
+> - `zxwei/mineru-api-full`：包含完整的 VLM 功能，支持所有后端类型
+> - `zxwei/mineru-api`：基础版本，主要支持 pipeline 后端
+> - 如需 GPU 加速，请确保已安装 nvidia-container-toolkit
 
-   ```bash
-   pipx install uv pre-commit
-   ```
+#### 2. MinerU 服务地址配置
 
-2. Clone the source code and install Python dependencies:
+在 `/knowflow/server/services/config/settings.yaml` 配置文件中，配置 MinerU 服务地址以及解析模式:
 
-   ```bash
-   git clone https://github.com/infiniflow/ragflow.git
-   cd ragflow/
-   uv sync --python 3.10 --all-extras # install RAGFlow dependent python modules
-   uv run download_deps.py
-   pre-commit install
-   ```
-
-3. Launch the dependent services (MinIO, Elasticsearch, Redis, and MySQL) using Docker Compose:
-
-   ```bash
-   docker compose -f docker/docker-compose-base.yml up -d
-   ```
-
-   Add the following line to `/etc/hosts` to resolve all hosts specified in **docker/.env** to `127.0.0.1`:
-
-   ```
-   127.0.0.1       es01 infinity mysql minio redis sandbox-executor-manager
-   ```
-
-4. If you cannot access HuggingFace, set the `HF_ENDPOINT` environment variable to use a mirror site:
-
-   ```bash
-   export HF_ENDPOINT=https://hf-mirror.com
-   ```
-
-5. If your operating system does not have jemalloc, please install it as follows:
-
-   ```bash
-   # ubuntu
-   sudo apt-get install libjemalloc-dev
-   # centos
-   sudo yum install jemalloc
-   ```
-   
-6. Launch backend service:
-
-   ```bash
-   source .venv/bin/activate
-   export PYTHONPATH=$(pwd)
-   bash docker/launch_backend_service.sh
-   ```
-
-7. Install frontend dependencies:
-
-   ```bash
-   cd web
-   npm install
-   ```
-
-8. Launch frontend service:
-
-   ```bash
-   npm run dev
-   ```
-
-   _The following output confirms a successful launch of the system:_
-
-   ![](https://github.com/user-attachments/assets/0daf462c-a24d-4496-a66f-92533534e187)
-
-9. Stop RAGFlow front-end and back-end service after development is complete:
-
-   ```bash
-   pkill -f "ragflow_server.py|task_executor.py"
-   ```
+```bash
+  fastapi:
+    # FastAPI 服务地址
+    # 本地开发: http://localhost:8888
+    # Docker部署: http://host.docker.internal:8888 (Docker Desktop)
+    #           或 http://宿主机IP:8888 (Linux Docker)
+    url: "http://宿主机IP:8888"
+    
+    # HTTP 请求超时时间（秒）
+    timeout: 30000
 
 
-## 📚 Documentation
+   # VLM 后端配置
+  vlm:
+    sglang:
+      # SGLang 服务器地址（vlm-sglang-client 后端需要）
+      # Docker部署时同样需要使用宿主机IP或容器网络地址
+      server_url: "http://宿主机IP:30000"
+```
 
-- [Quickstart](https://ragflow.io/docs/dev/)
-- [Configuration](https://ragflow.io/docs/dev/configurations)
-- [Release notes](https://ragflow.io/docs/dev/release_notes)
-- [User guides](https://ragflow.io/docs/dev/category/guides)
-- [Developer guides](https://ragflow.io/docs/dev/category/developers)
-- [References](https://ragflow.io/docs/dev/category/references)
-- [FAQs](https://ragflow.io/docs/dev/faq)
 
-## 📜 Roadmap
+#### 3. 启动容器，开始使用
 
-See the [RAGFlow Roadmap 2025](https://github.com/infiniflow/ragflow/issues/4214)
+进入到 `docker` 目录执行（此步骤和 RAGFlow 官方一致）：
 
-## 🏄 Community
+```bash
+docker compose up -d
+```
 
-- [Discord](https://discord.gg/NjYzJD3GM3)
-- [Twitter](https://twitter.com/infiniflowai)
-- [GitHub Discussions](https://github.com/orgs/infiniflow/discussions)
+访问地址：`http://服务器IP:80`，进入 KnowFlow 首页
 
-## 🙌 Contributing
+### 方式二：源码部署
 
-RAGFlow flourishes via open-source collaboration. In this spirit, we embrace diverse contributions from the community.
-If you would like to be a part, review our [Contribution Guidelines](https://ragflow.io/docs/dev/contributing) first.
+
+#### 前置要求
+- Python 3.9+
+- Node.js 16+ 
+- pnpm
+- MinerU 服务（参考上述步骤）
+
+#### KnowFlow 后端部署
+
+1. **安装 Python 依赖**
+```bash
+cd knowflow/server
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. **启动文件转换服务（可选）**
+```bash
+# 支持 PDF 以外文件格式需要启动此服务
+docker run -d -p 3000:3000 gotenberg/gotenberg:8
+```
+
+3. **执行 install 脚本，初始化环境变量**
+
+```bash
+cd knowflow/
+./scripts/install.sh --local
+```
+
+4. **启动 knowflow 后端服务**
+```bash
+python3 app.py
+```
+
+#### RAGFlow 后端部署
+
+1. **修改 docker/entrypoint.sh 文件**
+```bash
+# 注释掉 nginx 行
+# /usr/sbin/nginx
+```
+
+2. **激活 Python 虚拟环境**
+```bash
+source .venv/bin/activate
+export PYTHONPATH=$(pwd)
+```
+
+3. **配置 HuggingFace 镜像（可选）**
+```bash
+# 如果无法访问 HuggingFace，设置镜像站点
+export HF_ENDPOINT=https://hf-mirror.com
+```
+
+4. **检查配置文件**
+确保 `conf/service_conf.yaml` 中所有主机和端口配置正确。
+
+5. **启动后端服务**
+
+方案一：
+
+```bash
+# 设置内存分配器和启动任务执行器
+JEMALLOC_PATH=$(pkg-config --variable=libdir jemalloc)/libjemalloc.so
+LD_PRELOAD=$JEMALLOC_PATH python rag/svr/task_executor.py 1
+
+# 启动 API 服务器
+python api/ragflow_server.py
+```
+
+方案二：
+
+```bash
+./local_entrypoint.sh
+```
+
+
+#### RAGFlow 前端部署
+
+1. **安装 Node.js 依赖**
+```bash
+cd web
+pnpm install
+```
+
+2. **启动开发服务器**
+```bash
+pnpm dev
+```
+
+浏览器访问启动后的地址，即可进入系统。
+
+---
+
+## 📋 功能详解
+
+### 🎨 全新 UI 界面
+
+基于 RAGFlow v0.19.0 二次开发，提供更加现代化的用户界面：
+
+<div align="center">
+  <img src="knowflow/assets/ui_1.png" alt="KnowFlow 主界面">
+</div>
+
+<div align="center">
+  <img src="knowflow/assets/ui_2.png" alt="KnowFlow 知识库界面">
+</div>
+
+### 👥 用户后台管理系统
+
+参考 [ragflow-plus](https://github.com/zstar1003/ragflow-plus/) 实现的企业级用户管理：
+
+<div align="center">
+  <img src="knowflow/assets/user-setting.png" alt="用户后台管理系统">
+</div>
+
+**核心特性：**
+- 移除前端用户注册通道，管理员统一管理用户
+- 用户管理、团队管理、模型配置管理
+- 新用户自动加入创建时间最早用户的团队
+- 继承团队模型配置，降低配置复杂度
+
+### 📄 图文混排输出
+
+**支持格式：** PPT、PNG、Word、DOC、Excel 等 20+ 种常见文件格式
+
+**分块策略：**
+1. **文档结构分块**：基于文档原生结构进行智能分块
+2. **按标题分块**：根据标题层级自动划分内容块
+3. **RAGFlow 原分块**：保持与官方完全一致的分块规则
+
+<div align="center">
+  <img src="knowflow/assets/mulcontent.png" alt="图文混排示例">
+</div>
+
+### 💼 企业微信集成
+
+支持企业微信应用，可将企业微信作为聊天机器人入口：
+
+<div align="center">
+  <img src="knowflow/assets/wecom.jpg" style="height: 400px;" alt="企业微信应用">
+</div>
+
+详细配置方式参照 `server/services/knowflow/README.md`
+
+---
+
+## ⚙️ 高级配置
+
+### 🔧 MinerU 本地调试（开发环境）
+
+如果需要在本地环境进行开发调试：
+
+```bash
+# 1. 安装 Python 依赖（注意：zsh 需要用引号包围方括号）
+pip install "mineru[core]" fastapi uvicorn python-multipart
+
+# 2. 设置环境变量
+export MINERU_DEVICE_MODE=cpu
+export MINERU_MODEL_SOURCE=modelscope
+
+# 3. 进入项目目录
+cd web_api
+
+# 4. 启动本地服务
+python app.py
+```
+
+**配置 settings.yaml：**
+
+```yaml
+mineru:
+  fastapi:
+    # 本地开发服务地址
+    url: "http://localhost:8888"
+  
+  vlm:
+    sglang:
+      # 本地SGLang服务地址（如果使用vlm-sglang-client后端）
+      server_url: "http://localhost:30000"
+```
+
+
+---
+
+## 🔧 编译 Docker（开发者）
+
+
+### 编译 KnowFlow-Server 镜像
+
+```bash
+# 后端镜像
+docker buildx build --platform linux/amd64 --target backend -t zxwei/knowflow-server:v0.3.0 --push .
+
+# 前端镜像
+docker buildx build --platform linux/amd64 --target frontend -t zxwei/knowflow-web:v0.3.0 --push .
+```
+
+### 编译 KnowFlow 全镜像
+
+```bash
+# 安装 uv
+sudo snap install astral-uv --classic
+uv run download_deps.py
+docker build -f Dockerfile.deps -t infiniflow/ragflow_deps .
+docker build --build-arg LIGHTEN=1 -f Dockerfile -t infiniflow/ragflow:nightly-slim .
+
+vim docker/.env 
+RAGFLOW_IMAGE=infiniflow/ragflow:nightly-slim
+
+```
+
+---
+
+## 📋 TODO 清单
+
+- [x] 支持更多文档格式的 MinerU 解析
+- [x] 增强 MarkDown 文件的分块规则
+- [x] 优化 Excel 文件分块
+- [x] MinerU 2.0 接入
+- [x] RAGFlow 前端 UI 源码开源
+- [x] API Token 自动生成机制
+- [ ] TextIn 接入
+- [ ] MinerU 支持自动问题，自动关键词，Raptor，知识图谱 
+- [ ] 多租户数据隔离
+- [ ] 知识库版本管理
+- [ ] 文档审批工作流
+
+---
+
+## ❓ 常见问题
+
+### 1. 如何选择 MinerU 镜像版本？
+
+**zxwei/mineru-api-full（推荐）：**
+- 包含完整的 VLM 功能
+- 支持所有后端类型：pipeline, vlm-transformers, vlm-sglang-engine, vlm-sglang-client
+- 镜像较大，但功能最全
+
+**zxwei/mineru-api：**
+- 基础版本，镜像较小
+- 主要支持 pipeline 后端
+- 适合基础文档解析需求
+
+### 2. 如何启用 GPU 加速？
+
+1. **安装 nvidia-container-toolkit**
+```bash
+# 添加源
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+# 安装组件
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+
+# 重启 Docker
+sudo systemctl restart docker
+```
+
+2. **启动容器时使用 GPU**
+确保启动命令包含 `--gpus=all` 参数
+
+3. **配置 GPU 后端**
+```yaml
+mineru:
+  default_backend: "vlm-sglang-client"  # 使用 VLM 后端
+```
+
+### 3. 常见错误处理
+
+**端口冲突：**
+- MinerU 服务：8888, 30000
+- KnowFlow 前端：8081
+- 后端服务：5000
+- 确保端口未被占用
+
+**内存不足：**
+增加 Docker 内存限制或调整 `--shm-size` 参数
+
+**网络连接问题：**
+检查防火墙设置和容器网络配置
+
+**图片显示问题：**
+确保聊天助手提示词包含图片显示指令：
+
+> 请参考{knowledge}内容回答用户问题。<br>
+> 如果知识库内容包含图片，请在回答中包含图片URL。<br>
+> 注意这个 html 格式的 URL 是来自知识库本身，URL 不能做任何改动。<br>
+> 请确保回答简洁、专业，将图片自然地融入回答内容中。
+
+---
+
+## 🤝 社区与支持
+
+### 💬 交流群
+
+如有需求或问题建议，可加入交流群讨论。
+
+加微信 `skycode007`，备注"加群"即可。
+
+### 📢 更新信息
+
+项目持续更新中，更新日志会在微信公众号 **[KnowFlow 企业知识库]** 发布，欢迎关注。
+
+### 🙏 鸣谢
+
+本项目基于以下开源项目开发：
+
+- [ragflow](https://github.com/infiniflow/ragflow) - 核心 RAG 框架
+
+---
+
+<div align="center">
+  <p>⭐ 如果这个项目对您有帮助，请不要忘记点个 Star！</p>
+  <p>🚀 让我们一起构建更好的企业知识库解决方案！</p>
+</div>
