@@ -308,11 +308,12 @@ pnpm dev
 
 ### 👥 用户后台管理系统
 
-参考 [ragflow-plus](https://github.com/zstar1003/ragflow-plus/) 实现的企业级用户管理：
+管理员可以进行统一的管理：
 
 <div align="center">
   <img src="knowflow/assets/user-setting.png" alt="用户后台管理系统">
 </div>
+
 
 **核心特性：**
 - 移除前端用户注册通道，管理员统一管理用户
@@ -408,6 +409,18 @@ docker build --build-arg LIGHTEN=1 -f Dockerfile -t infiniflow/ragflow:nightly-s
 vim docker/.env 
 RAGFLOW_IMAGE=infiniflow/ragflow:nightly-slim
 
+```
+
+---
+
+## 开启管理员管理功能
+
+默认注册的账号不具备管理员权限，如需使用管理功能，需要对账号进行授权。
+
+运行 KnowFlow 之后，执行 `docker/set_superuser.sh` 脚本:
+
+```bash
+ ./set_superuser.sh set xxxx@xxx.com 
 ```
 
 ---
