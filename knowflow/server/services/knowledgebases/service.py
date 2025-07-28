@@ -789,6 +789,9 @@ class KnowledgebaseService:
         conn = None
         cursor = None
         try:
+            # 立即更新文档状态为"正在解析"，确保UI及时显示
+            _update_document_progress(doc_id, run="1", progress=0.0, message="开始解析文档...")
+            
             # 获取文档和文件信息
             conn = cls._get_db_connection()
             cursor = conn.cursor(dictionary=True)
@@ -836,7 +839,7 @@ class KnowledgebaseService:
             conn = None  # 确保连接已关闭
 
             # 更新文档状态为处理中 (使用 parser 模块的函数)
-            _update_document_progress(doc_id, status="2", run="1", progress=0.0, message="开始解析")
+            _update_document_progress(doc_id, run="1", progress=0.0, message="开始解析")
 
             # 调用后台解析函数
             embedding_config = cls.get_system_embedding_config()
@@ -849,7 +852,7 @@ class KnowledgebaseService:
             print(f"文档解析启动或执行过程中出错 (Doc ID: {doc_id}): {str(e)}")
             # 确保在异常时更新状态为失败
             try:
-                _update_document_progress(doc_id, status="1", run="0", message=f"解析失败: {str(e)}")
+                _update_document_progress(doc_id, run="4", message=f"解析失败: {str(e)}")
             except Exception as update_err:
                 print(f"更新文档失败状态时出错 (Doc ID: {doc_id}): {str(update_err)}")
             # raise Exception(f"文档解析失败: {str(e)}")
@@ -879,7 +882,7 @@ class KnowledgebaseService:
         except Exception as e:
             print(f"启动异步解析任务失败 (Doc ID: {doc_id}): {str(e)}")
             try:
-                _update_document_progress(doc_id, status="1", run="0", message=f"启动解析失败: {str(e)}")
+                _update_document_progress(doc_id, run="4", message=f"启动解析失败: {str(e)}")
             except Exception as update_err:
                 print(f"更新文档启动失败状态时出错 (Doc ID: {doc_id}): {str(update_err)}")
             raise Exception(f"启动异步解析任务失败: {str(e)}")
@@ -1176,7 +1179,7 @@ class KnowledgebaseService:
                     traceback.print_exc()
                     # 更新文档状态为失败
                     try:
-                        _update_document_progress(doc_id, status="1", run="0", progress=0.0, message=f"批量任务中解析失败: {str(e)[:255]}")
+                        _update_document_progress(doc_id, run="4", progress=0.0, message=f"批量任务中解析失败: {str(e)[:255]}")
                     except Exception as update_err:
                         print(f"[Service-ERROR] 更新文档 {doc_id} 失败状态时出错: {str(update_err)}")
 

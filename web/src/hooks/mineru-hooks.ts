@@ -123,6 +123,9 @@ export const useRunMinerUDocument = () => {
 
             const result = await callKnowFlowParseApi(docInfo.id, docConfig);
             results.push(result);
+
+            // 每调用一次KnowFlow API后立即刷新文档列表
+            queryClient.invalidateQueries({ queryKey: ['fetchDocumentList'] });
           } catch (error: any) {
             console.error(`文档 ${docInfo.id} 解析失败:`, error);
             results.push({ code: -1, message: error.message });

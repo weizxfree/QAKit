@@ -212,7 +212,7 @@ def perform_parse(doc_id, doc_info, file_info, embedding_config):
         process_duration = time.time() - start_time
         final_message = "表格解析完成" if is_table_file else "文档解析完成"
 
-        _update_document_progress(doc_id,  progress=1.0, status='1', run='3', chunk_count=chunk_count, process_duration=process_duration, message=final_message)
+        _update_document_progress(doc_id,  progress=1.0, run='3', chunk_count=chunk_count, process_duration=process_duration, message=final_message)
         
         print(f"[Parser-INFO] 文档 {doc_id} 处理完成，生成 {chunk_count} 个块")
         return {"success": True, "chunk_count": chunk_count}
@@ -224,7 +224,7 @@ def perform_parse(doc_id, doc_info, file_info, embedding_config):
         error_message = f"解析失败: {e}"
         traceback.print_exc() # 打印详细错误堆栈
         # 更新文档状态为失败
-        _update_document_progress(doc_id, status='1', run='0', message=error_message, process_duration=process_duration) # status=1表示完成，run=0表示失败
+        _update_document_progress(doc_id, run='4', message=error_message, process_duration=process_duration) # run=4表示失败
         # 不抛出异常，让调用者知道任务已结束（但失败）
         return {"success": False, "error": error_message}
 

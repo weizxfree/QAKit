@@ -171,6 +171,11 @@ def parse_document(doc_id):
         return response
         
     try:
+        # 立即更新文档状态为"正在解析"，确保UI及时响应
+        from services.knowledgebases.document_parser import _update_document_progress
+        _update_document_progress(doc_id, run="1", progress=0.0, message="开始解析文档...")
+        
+        # 异步执行解析，避免阻塞API响应
         result = KnowledgebaseService.async_parse_document(doc_id)
         return success_response(data=result)
     except Exception as e:
@@ -240,25 +245,6 @@ def set_system_embedding_config_route():
         # 捕获路由层或未预料的服务层异常
         print(f"设置系统 Embedding 配置失败: {str(e)}")
         return error_response(message=f"设置配置时发生内部错误: {str(e)}", code=500)
-
-@knowledgebase_bp.route('/documents/<doc_id>/parse', methods=['POST'])
-def parse_document_async(doc_id): # 函数名改为 async 以区分
-    """开始异步解析单个文档"""
-    if request.method == 'OPTIONS':
-        response = success_response({})
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        return response
-
-    try:
-        result = KnowledgebaseService.parse_document(doc_id) # 调用同步版本
-        if result.get("success"):
-             return success_response(data={"message": f"文档 {doc_id} 同步解析完成。", "details": result})
-        else:
-             return error_response(result.get("message", "解析失败"), code=500)
-
-    except Exception as e:
-        return error_response(str(e), code=500)
 
 # 启动顺序批量解析路由
 @knowledgebase_bp.route('/<string:kb_id>/batch_parse_sequential/start', methods=['POST'])
