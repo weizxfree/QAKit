@@ -28,7 +28,7 @@
         <img src="https://img.shields.io/github/v/release/infiniflow/ragflow?color=blue&label=Última%20Relese" alt="Última Versão">
     </a>
     <a href="https://github.com/infiniflow/ragflow/blob/main/LICENSE">
-        <img height="21" src="https://img.shields.io/badge/License-Apache--2.0-ffffff?labelColor=d4eaf7&color=2e6cc4" alt="licença">
+        <img height="21" src="https://img.shields.io/badge/License-AGPL--3.0-ffffff?labelColor=d4eaf7&color=2e6cc4" alt="licença">
     </a>
 </p>
 
