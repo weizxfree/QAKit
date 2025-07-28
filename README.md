@@ -100,6 +100,7 @@ graph TB
 
 </div>
 
+
 ### 🌟 核心优势
 
 <div align="center">
@@ -299,6 +300,10 @@ pnpm dev
 
 <div align="center">
   <img src="knowflow/assets/ui_2.png" alt="KnowFlow 知识库界面">
+</div>
+
+<div align="center">
+  <img src="knowflow/assets/ui_3.png" alt="KnowFlow 知识库界面">
 </div>
 
 ### 👥 用户后台管理系统
